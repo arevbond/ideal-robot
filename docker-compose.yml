@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - 5430:5430
+      - 5432:5432
     restart: unless-stopped
 
   pgAdmin:
@@ -22,8 +22,3 @@ services:
     ports:
       - 8082:8081
     restart: unless-stopped
-
-  app:
-    build: .
-    depends_on:
-      - db
