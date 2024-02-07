@@ -11,7 +11,7 @@ import (
 type Config struct {
 	Env        string `yaml:"env" env-default:"dev"`
 	HttpServer `yaml:"http_server"`
-	Database
+	DB         Database
 }
 
 type HttpServer struct {
@@ -21,7 +21,7 @@ type HttpServer struct {
 }
 
 type Database struct {
-	DBName   string `env:"POSTGRES_DB"`
+	Name     string `env:"POSTGRES_DB"`
 	Username string `env:"POSTGRES_USER"`
 	Password string `env:"POSTGRES_PASSWORD"`
 }
