@@ -19,7 +19,7 @@ type Storage struct {
 }
 
 func New(log *slog.Logger, cfg *config.Config) (*Storage, error) {
-	dbSource := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s", cfg.DB.Username, cfg.DB.Password, cfg.DB.Name)
+	dbSource := fmt.Sprintf("postgres://%s:%s@localhost:%d/%s", cfg.DB.Username, cfg.DB.Password, cfg.DB.Port, cfg.DB.Name)
 	conn, err := sqlx.Connect("pgx", dbSource)
 	if err != nil {
 		return nil, e.Wrap("connect to pgx failed", err)

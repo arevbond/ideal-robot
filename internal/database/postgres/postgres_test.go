@@ -34,6 +34,7 @@ func setup(t *testing.T) {
 		DB: config.Database{
 			Username: "admin",
 			Password: "admin123",
+			Port:     5430,
 			Name:     "test_db",
 		},
 	}
@@ -42,7 +43,6 @@ func setup(t *testing.T) {
 		t.Fatalf("failed to create s: %v", err)
 	}
 
-	// Проверка соединения с базой данных
 	err = s.db.Ping()
 	if err != nil {
 		t.Fatalf("failed to ping database: %v", err)
@@ -52,6 +52,7 @@ func setup(t *testing.T) {
 	createTables(t)
 }
 
+// TODO: сделать автоматические миграции через goose
 func createTables(t *testing.T) {
 	sqlFile, err := os.Open("../../../migrations/20240205101902_init.sql")
 	if err != nil {
@@ -64,7 +65,6 @@ func createTables(t *testing.T) {
 	}
 	query := string(queryBytes)
 
-	// Выполняем SQL-запрос
 	_, err = storage.db.Exec(query)
 	if err != nil {
 		t.Fatal("Error executing SQL query:", err)
@@ -74,7 +74,6 @@ func createTables(t *testing.T) {
 func dropTables(t *testing.T) {
 	q := `DROP TABLE hubs; DROP TABLE users;`
 
-	// Выполняем SQL-запрос
 	_, err := storage.db.Exec(q)
 	if err != nil {
 		t.Fatal("Error executing SQL query:", err)
@@ -89,7 +88,6 @@ func TestUser(t *testing.T) {
 		{Username: "Nikita3", PasswordHash: "asldd2asdasd", Email: "random@em2ail.com", CreatedAt: time.Now()},
 	}
 	for _, u := range users {
-		//fmt.Println(u)
 		err := storage.CreateUser(context.Background(), u)
 		if err != nil {
 			t.Errorf("can't create user %s %s %s", u.Username, u.PasswordHash, u.Email)
@@ -114,13 +112,13 @@ func TestUser(t *testing.T) {
 		{Username: "Nikita3", PasswordHash: "123", Email: "randomBEW@em2ail.com", CreatedAt: time.Now()},
 	}
 	for _, u := range newUsers {
-		//fmt.Println(u)
 		err = storage.UpdateUser(context.Background(), u)
 		if err != nil {
 			t.Errorf("can't update user %s %s %s", u.Username, u.PasswordHash, u.Email)
 		}
 	}
 
+	// get
 	for _, u := range newUsers {
 		userInDB, err := storage.GetUser(context.Background(), u.Username)
 		if err != nil {
@@ -134,6 +132,7 @@ func TestUser(t *testing.T) {
 		}
 	}
 
+	// delete
 	for _, u := range newUsers[:1] {
 		err = storage.DeleteUser(context.Background(), u)
 		if err != nil {

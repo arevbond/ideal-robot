@@ -9,7 +9,18 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - 5432:5432
+      - "5432:5432"
+    restart: unless-stopped
+
+  test_db:
+    image: postgres:latest
+    container_name: "HH_postgres_test_db"
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5430:5432"
     restart: unless-stopped
 
   pgAdmin:

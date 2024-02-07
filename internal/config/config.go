@@ -22,6 +22,7 @@ type HttpServer struct {
 
 type Database struct {
 	Name     string `env:"POSTGRES_DB"`
+	Port     int    `env:"POSTGRES_PORT"`
 	Username string `env:"POSTGRES_USER"`
 	Password string `env:"POSTGRES_PASSWORD"`
 }
