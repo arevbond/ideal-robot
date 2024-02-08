@@ -82,7 +82,7 @@ func dropTables(t *testing.T) {
 
 func TestUser(t *testing.T) {
 	// create
-	users := []*models.DBUser{
+	users := []*models.User{
 		{Username: "Nikita", PasswordHash: "OLDPASSWORDHASH", Email: "random@email.com", CreatedAt: time.Now()},
 		{Username: "Nikita2", PasswordHash: "OLDPASSWORDHASH", Email: "random@em2ail.com", CreatedAt: time.Now()},
 		{Username: "Nikita3", PasswordHash: "asldd2asdasd", Email: "random@em2ail.com", CreatedAt: time.Now()},
@@ -94,13 +94,7 @@ func TestUser(t *testing.T) {
 		}
 	}
 
-	q := `SELECT * FROM users`
-	usersInDB := []*models.DBUser{}
-	err := storage.db.Select(&usersInDB, q)
-	if err != nil {
-		t.Error("can't select users from db", err)
-	}
-
+	usersInDB, err := storage.GetUsers(context.Background())
 	if len(usersInDB) != len(users) {
 		t.Error("not enough created users", err)
 	}
@@ -118,17 +112,30 @@ func TestUser(t *testing.T) {
 		}
 	}
 
-	// get
+	// get by username
+	fullUsers := []*models.DBUser{}
 	for _, u := range newUsers {
-		userInDB, err := storage.GetUser(context.Background(), u.Username)
+		userInDB, err := storage.GetUserByUsername(context.Background(), u.Username)
 		if err != nil {
-			t.Error(fmt.Sprintf("can't get user %s from db", u.Username), err)
+			t.Error(fmt.Sprintf("can't get user %s from db by username", u.Username), err)
 		}
 		if u.PasswordHash != userInDB.PasswordHash {
 			t.Errorf("wants: %s, got: %s", userInDB.PasswordHash, u.PasswordHash)
 		}
 		if u.Email != userInDB.Email {
 			t.Errorf("wants: %s, got: %s", userInDB.Email, u.Email)
+		}
+		fullUsers = append(fullUsers, userInDB)
+	}
+
+	// get by id
+	for _, u := range fullUsers {
+		user, err := storage.GetUserByID(context.Background(), u.ID)
+		if err != nil {
+			t.Error(fmt.Sprintf("can't get user %s from db by id", u.Username), err)
+		}
+		if user.Username != u.Username {
+			t.Error(fmt.Sprintf("incorrect getting user by id; want %s get %s", u.Username, user.Username), err)
 		}
 	}
 
@@ -140,8 +147,7 @@ func TestUser(t *testing.T) {
 		}
 	}
 
-	finishUsers := []*models.DBUser{}
-	err = storage.db.Select(&finishUsers, q)
+	finishUsers, err := storage.GetUsers(context.Background())
 	if err != nil {
 		t.Error("can't select users from db", err)
 	}
@@ -149,5 +155,105 @@ func TestUser(t *testing.T) {
 	if len(finishUsers) != len(newUsers)-1 {
 		t.Errorf("want users in db: %d, got: %d", len(newUsers)-1, len(finishUsers))
 	}
+}
 
+func TestHub(t *testing.T) {
+	user1 := &models.User{Username: "Nikita", PasswordHash: "SomeNikitaHash", Email: "nikita@mail.ru", CreatedAt: time.Now()}
+	user2 := &models.User{Username: "Stas", PasswordHash: "SomeStasHash", Email: "stas@mail.ru", CreatedAt: time.Now()}
+	user3 := &models.User{Username: "Akbar", PasswordHash: "SomeAkbarHash", Email: "akbar@mail.ru", CreatedAt: time.Now()}
+	users := []*models.User{user1, user2, user3}
+
+	dbUsers := []*models.DBUser{}
+	hubs := []*models.Hub{}
+	for i, u := range users {
+		_ = storage.CreateUser(context.Background(), u)
+		dbUser, _ := storage.GetUserByUsername(context.Background(), u.Username)
+		dbUsers = append(dbUsers, dbUser)
+		for j := 0; j < i+2; j++ {
+			hubs = append(hubs, &models.Hub{OwnerID: dbUser.ID, Name: fmt.Sprintf("hub №%d", j),
+				Description: fmt.Sprintf("hub by %s", dbUser.Username)})
+		}
+	}
+
+	// create
+	for _, h := range hubs {
+		err := storage.CreateHub(context.Background(), h)
+		if err != nil {
+			t.Error("can't create hub", err)
+		}
+	}
+	allHubsInDB, err := storage.GetHubs(context.Background())
+	if err != nil {
+		t.Error("can't get all hubs", err)
+	}
+	if len(allHubsInDB) != len(hubs) {
+		t.Errorf("some hubs not create; want %d, get %d", len(hubs), len(allHubsInDB))
+	}
+
+	// get
+	for _, h := range allHubsInDB {
+		hInDb, err := storage.GetHubByID(context.Background(), h.ID)
+		if err != nil {
+			t.Error("can't get hub by id", err)
+		}
+		if h.Name != hInDb.Name || h.OwnerID != hInDb.OwnerID || h.Description != hInDb.Description {
+			t.Errorf("incorrect hub in db; want: %s %s %s, get %s %s %s", h.Name, h.OwnerID, h.Description,
+				hInDb.Name, hInDb.OwnerID, hInDb.Description)
+		}
+	}
+
+	for i, u := range dbUsers {
+		hubsByUserID, err := storage.GetHubsByUserID(context.Background(), u.ID)
+		if err != nil {
+			t.Error("can't get hubsByUserID by userID", err)
+		}
+		if len(hubsByUserID) != i+2 {
+			t.Errorf("not enough hubsByUserID in user; want %d, get %d", i+2, len(hubsByUserID))
+		}
+	}
+
+	for i, h := range allHubsInDB {
+		if i < len(allHubsInDB)-1 {
+			nextHub := allHubsInDB[i+1]
+			newHub := &models.DBHub{ID: h.ID, OwnerID: nextHub.OwnerID,
+				Name: nextHub.Name, Description: nextHub.Description}
+			err := storage.UpdateHub(context.Background(), newHub)
+			if err != nil {
+				t.Error("can't update hub", err)
+			}
+		}
+	}
+
+	allHubsInDBold := allHubsInDB
+	for i, h := range allHubsInDBold {
+		if i < len(allHubsInDBold)-1 {
+			nextHub := allHubsInDBold[i+1]
+			curHubInDB, err := storage.GetHubByID(context.Background(), h.ID)
+			if err != nil {
+				t.Error("can't get hub by id", err)
+			}
+			if curHubInDB.Name != nextHub.Name {
+				t.Errorf("don't update name hub; want %s get %s", nextHub.Name, curHubInDB.Name)
+			}
+			if curHubInDB.OwnerID != nextHub.OwnerID {
+				t.Errorf("don't update owner_id hub; want %s get %s", nextHub.OwnerID, curHubInDB.OwnerID)
+			}
+			if curHubInDB.Description != nextHub.Description {
+				t.Errorf("don't update descriprion hub; want %s get %s", nextHub.Description, curHubInDB.Description)
+			}
+		}
+	}
+	for _, h := range allHubsInDBold {
+		err := storage.DeleteHub(context.Background(), h.ID)
+		if err != nil {
+			t.Error("can't delete hub by id", err)
+		}
+	}
+	allHubs, err := storage.GetHubs(context.Background())
+	if err != nil {
+		t.Error("can't get all hubs", err)
+	}
+	if len(allHubs) != 0 {
+		t.Errorf("not enough hubs in db; want %d, get %d", 0, len(allHubs))
+	}
 }
