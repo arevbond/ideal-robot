@@ -8,6 +8,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"io"
 	"log/slog"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
@@ -72,7 +73,7 @@ func createTables(t *testing.T) {
 }
 
 func dropTables(t *testing.T) {
-	q := `DROP TABLE hubs; DROP TABLE users;`
+	q := `DROP TABLE devices_data; DROP TABLE devices; DROP TABLE hubs; DROP TABLE users;`
 
 	_, err := storage.db.Exec(q)
 	if err != nil {
@@ -255,5 +256,207 @@ func TestHub(t *testing.T) {
 	}
 	if len(allHubs) != 0 {
 		t.Errorf("not enough hubs in db; want %d, get %d", 0, len(allHubs))
+	}
+}
+
+func TestDevice(t *testing.T) {
+	user1 := &models.User{Username: "Nikita", PasswordHash: "SomeNikitaHash", Email: "nikita@mail.ru", CreatedAt: time.Now()}
+	user2 := &models.User{Username: "Stas", PasswordHash: "SomeStasHash", Email: "stas@mail.ru", CreatedAt: time.Now()}
+	user3 := &models.User{Username: "Akbar", PasswordHash: "SomeAkbarHash", Email: "akbar@mail.ru", CreatedAt: time.Now()}
+	users := []*models.User{user1, user2, user3}
+	hubs := []*models.Hub{}
+	for i, u := range users {
+		_ = storage.CreateUser(context.Background(), u)
+		dbUser, _ := storage.GetUserByUsername(context.Background(), u.Username)
+		for j := 0; j < i+2; j++ {
+			hubs = append(hubs, &models.Hub{OwnerID: dbUser.ID, Name: fmt.Sprintf("hub №%d", j),
+				Description: fmt.Sprintf("hub by %s", dbUser.Username)})
+		}
+	}
+	for _, h := range hubs {
+		err := storage.CreateHub(context.Background(), h)
+		if err != nil {
+			t.Error("can't create hub", err)
+		}
+	}
+	allHubsInDB, err := storage.GetHubs(context.Background())
+	if err != nil {
+		t.Error("can't get all hubs", err)
+	}
+
+	// create && get
+	devicesInDB := []*models.DBDevice{}
+	for i, h := range allHubsInDB {
+		status := true
+		if rand.Intn(10) <= 5 {
+			status = false
+		}
+		device := &models.Device{
+			HubID:    h.ID,
+			Name:     fmt.Sprintf("device #%d", i),
+			Type:     0,
+			Location: fmt.Sprintf("room #%d", i+1),
+			Status:   status,
+		}
+		err = storage.CreateDevice(context.Background(), device)
+		if err != nil {
+			t.Error("can't create device in db", err)
+		}
+		devicesInDBByHubID, err := storage.GetDevicesByHubID(context.Background(), h.ID, 0, 100)
+		if err != nil {
+			t.Error("can't get devices by hub id", err)
+		}
+		for _, d := range devicesInDBByHubID {
+			curDevice, err := storage.GetDeviceByID(context.Background(), d.ID)
+			devicesInDB = append(devicesInDB, curDevice)
+			if err != nil {
+				t.Error("can't get device by id", err)
+			}
+			if d.Name != curDevice.Name || d.Type != curDevice.Type || d.Location != curDevice.Location ||
+				d.Status != curDevice.Status {
+				t.Error("incorrect devices data in getting by id, and gettinb by hub_id")
+			}
+		}
+	}
+
+	// update
+	for i, d := range devicesInDB {
+		if i < len(devicesInDB)-1 {
+			nextDev := devicesInDB[i+1]
+			newDevice := &models.DBDevice{
+				ID:       d.ID,
+				HubID:    nextDev.HubID,
+				Name:     nextDev.Name,
+				Type:     nextDev.Type,
+				Location: nextDev.Location,
+				Status:   nextDev.Status,
+			}
+			err := storage.UpdateDevice(context.Background(), newDevice)
+			if err != nil {
+				t.Error("can't update device", err)
+			}
+		}
+	}
+
+	for i, d := range devicesInDB {
+		if i < len(devicesInDB)-1 {
+			curDev, err := storage.GetDeviceByID(context.Background(), d.ID)
+			if err != nil {
+				t.Error("can't get device by id", err)
+			}
+			nextDev := devicesInDB[i+1]
+			if curDev.Name != nextDev.Name || curDev.Type != nextDev.Type ||
+				curDev.Location != nextDev.Location || curDev.Status != nextDev.Status {
+				t.Error("not updated device info")
+			}
+		}
+	}
+
+	// delete
+	for _, d := range devicesInDB {
+		err = storage.DeleteDevice(context.Background(), d.ID)
+		if err != nil {
+			t.Error("can't delete device by id", err)
+		}
+	}
+	q := `SELECT * FROM devices`
+	curDevicesInDB := []*models.DBDevice{}
+	err = storage.db.Select(&curDevicesInDB, q)
+	if err != nil {
+		t.Error("can't get all devices from db", err)
+	}
+	if len(curDevicesInDB) != 0 {
+		t.Errorf("incorrect amount devices in db after deleting; want %d, got %d",
+			0, len(curDevicesInDB))
+	}
+}
+
+func TestDeviceData(t *testing.T) {
+	user1 := &models.User{Username: "Nikita", PasswordHash: "SomeNikitaHash", Email: "nikita@mail.ru", CreatedAt: time.Now()}
+	user2 := &models.User{Username: "Stas", PasswordHash: "SomeStasHash", Email: "stas@mail.ru", CreatedAt: time.Now()}
+	user3 := &models.User{Username: "Akbar", PasswordHash: "SomeAkbarHash", Email: "akbar@mail.ru", CreatedAt: time.Now()}
+	users := []*models.User{user1, user2, user3}
+	hubs := []*models.Hub{}
+	for i, u := range users {
+		_ = storage.CreateUser(context.Background(), u)
+		dbUser, _ := storage.GetUserByUsername(context.Background(), u.Username)
+		for j := 0; j < i+2; j++ {
+			hubs = append(hubs, &models.Hub{OwnerID: dbUser.ID, Name: fmt.Sprintf("hub №%d", j),
+				Description: fmt.Sprintf("hub by %s", dbUser.Username)})
+		}
+	}
+	for _, h := range hubs {
+		_ = storage.CreateHub(context.Background(), h)
+	}
+	allHubsInDB, _ := storage.GetHubs(context.Background())
+
+	// create && get
+	devicesInDB := []*models.DBDevice{}
+	for i, h := range allHubsInDB {
+		status := true
+		if rand.Intn(10) <= 5 {
+			status = false
+		}
+		device := &models.Device{
+			HubID:    h.ID,
+			Name:     fmt.Sprintf("device #%d", i),
+			Type:     0,
+			Location: fmt.Sprintf("room #%d", i+1),
+			Status:   status,
+		}
+		err := storage.CreateDevice(context.Background(), device)
+		if err != nil {
+			t.Error("can't create device in db", err)
+		}
+		devicesInDBByHubID, err := storage.GetDevicesByHubID(context.Background(), h.ID, 0, 100)
+		if err != nil {
+			t.Error("can't get devices by hub id", err)
+		}
+		for _, d := range devicesInDBByHubID {
+			curDevice, _ := storage.GetDeviceByID(context.Background(), d.ID)
+			devicesInDB = append(devicesInDB, curDevice)
+		}
+	}
+
+	// create && get
+	devicesDataInDB := []*models.DBDeviceData{}
+	for _, d := range devicesInDB {
+		devData := &models.DeviceData{
+			DeviceID:   d.ID,
+			Value:      "value",
+			Unit:       "unit",
+			ReceivedAt: time.Now(),
+		}
+		err := storage.CreateDeviceData(context.Background(), devData)
+		if err != nil {
+			t.Error("can't create device data", err)
+		}
+		devicesDataInDBByDeviceID, err := storage.GetAllDeviceData(context.Background(), d.ID, 0, 100)
+		if err != nil {
+			t.Error("can't get all device data", err)
+		}
+		for _, devDataInDB := range devicesDataInDBByDeviceID {
+			dData, err := storage.GetDeviceDataByID(context.Background(), devDataInDB.ID)
+			if err != nil {
+				t.Error("can't get device data by id", err)
+			}
+			devicesDataInDB = append(devicesDataInDB, dData)
+		}
+	}
+	newDevData := &models.DBDeviceData{
+		ID:         devicesDataInDB[0].ID,
+		DeviceID:   devicesDataInDB[0].DeviceID,
+		Value:      "new",
+		Unit:       "new",
+		ReceivedAt: time.Now(),
+	}
+	err := storage.UpdateDeviceData(context.Background(), newDevData)
+	if err != nil {
+		t.Error("can't update device data", err)
+	}
+	newDevDataInDB, _ := storage.GetDeviceDataByID(context.Background(), devicesDataInDB[0].ID)
+	if newDevData.Value != newDevDataInDB.Value || newDevData.Unit != newDevDataInDB.Unit {
+		t.Errorf("not updated device data; want: %s %s, got: %s %s",
+			newDevData.Value, newDevData.Unit, newDevDataInDB.Value, newDevDataInDB.Unit)
 	}
 }

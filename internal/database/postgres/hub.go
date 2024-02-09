@@ -13,7 +13,7 @@ func (s *Storage) GetHubs(ctx context.Context) ([]*models.DBHub, error) {
 	hubs := []*models.DBHub{}
 	err := s.db.SelectContext(ctx, &hubs, q)
 	if err != nil {
-		return nil, e.Wrap("cant get all hubs", err)
+		return nil, e.Wrap("cant get all hubs from storage", err)
 	}
 	return hubs, nil
 }
@@ -23,7 +23,7 @@ func (s *Storage) CreateHub(ctx context.Context, hub *models.Hub) error {
 	_, err := s.db.ExecContext(ctx, q, hub.OwnerID, hub.Name, hub.Description)
 
 	if err != nil {
-		return e.Wrap("can't create hub", err)
+		return e.Wrap("can't create hub in storage", err)
 	}
 	return nil
 }
@@ -34,7 +34,7 @@ func (s *Storage) GetHubByID(ctx context.Context, id int) (*models.DBHub, error)
 	var hub models.DBHub
 	err := s.db.GetContext(ctx, &hub, q, id)
 	if err != nil {
-		return nil, e.Wrap("can't get hub by id", err)
+		return nil, e.Wrap("can't get hub by id in storage", err)
 	}
 	return &hub, nil
 }
@@ -45,7 +45,7 @@ func (s *Storage) GetHubsByUserID(ctx context.Context, id uuid.UUID) ([]*models.
 	hubs := []*models.DBHub{}
 	err := s.db.SelectContext(ctx, &hubs, q, id)
 	if err != nil {
-		return nil, e.Wrap("can't get hubs by user_id", err)
+		return nil, e.Wrap("can't get hubs by user_id in storage", err)
 	}
 	return hubs, nil
 }
@@ -55,7 +55,7 @@ func (s *Storage) UpdateHub(ctx context.Context, hub *models.DBHub) error {
 
 	_, err := s.db.ExecContext(ctx, q, hub.OwnerID, hub.Name, hub.Description, hub.ID)
 	if err != nil {
-		return e.Wrap("can't update hub", err)
+		return e.Wrap("can't update hub in storage", err)
 	}
 	return nil
 }

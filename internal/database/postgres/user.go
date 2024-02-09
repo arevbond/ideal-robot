@@ -13,7 +13,7 @@ import (
 func (s *Storage) CreateUser(ctx context.Context, user *models.User) error {
 	q := `INSERT INTO users (username, password_hash, email, created_at) VALUES ($1, $2, $3, $4)`
 	if _, err := s.db.ExecContext(ctx, q, user.Username, user.PasswordHash, user.Email, user.CreatedAt); err != nil {
-		return e.Wrap("can't create user in database", err)
+		return e.Wrap("can't create user in storage", err)
 	}
 	s.log.Debug("create user", slog.String("username", user.Username))
 	return nil
@@ -24,7 +24,7 @@ func (s *Storage) UpdateUser(ctx context.Context, user *models.DBUser) error {
 	_, err := s.db.ExecContext(ctx, q, user.Username, user.PasswordHash, user.Email, user.Username)
 
 	if err != nil {
-		return e.Wrap("can't update user", err)
+		return e.Wrap("can't update user in storage", err)
 	}
 	s.log.Debug("update user", slog.String("username", user.Username))
 	return nil
@@ -83,7 +83,7 @@ func (s *Storage) DeleteUser(ctx context.Context, user *models.DBUser) error {
 
 	_, err := s.db.ExecContext(ctx, q, user.Username)
 	if err != nil {
-		return e.Wrap("can't delete user", err)
+		return e.Wrap("can't delete user from storage", err)
 	}
 	s.log.Debug("delete user", slog.String("username", user.Username))
 	return nil
