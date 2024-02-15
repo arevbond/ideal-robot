@@ -10,7 +10,7 @@ var (
 	ErrUserNotExist = errors.New("user not exist")
 )
 
-type Database interface {
+type Storage interface {
 	CreateUser(ctx context.Context, user *models.DBUser) error
 	UpdateUser(ctx context.Context, user *models.DBUser) error
 }
