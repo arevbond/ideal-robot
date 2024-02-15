@@ -18,14 +18,18 @@ func (s *Storage) GetHubs(ctx context.Context) ([]*models.DBHub, error) {
 	return hubs, nil
 }
 
-func (s *Storage) CreateHub(ctx context.Context, hub *models.Hub) error {
-	q := `INSERT INTO hubs (user_id, name, description) VALUES ($1, $2, $3)`
-	_, err := s.db.ExecContext(ctx, q, hub.OwnerID, hub.Name, hub.Description)
-
+func (s *Storage) CreateHub(ctx context.Context, hub *models.Hub) (int, error) {
+	q := `INSERT INTO hubs (user_id, name, description) VALUES ($1, $2, $3) RETURNING id`
+	rows, err := s.db.QueryContext(ctx, q, hub.OwnerID, hub.Name, hub.Description)
 	if err != nil {
-		return e.Wrap("can't create hub in storage", err)
+		return -1, e.Wrap("can't create hub in storage", err)
 	}
-	return nil
+
+	var id int
+	if rows.Next() {
+		rows.Scan(&id)
+	}
+	return id, nil
 }
 
 func (s *Storage) GetHubByID(ctx context.Context, id int) (*models.DBHub, error) {
