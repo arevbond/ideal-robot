@@ -4,7 +4,9 @@ import (
 	"HestiaHome/internal/lib/e"
 	"HestiaHome/internal/models"
 	"context"
+	"database/sql"
 	"github.com/google/uuid"
+	"log/slog"
 )
 
 func (s *Storage) GetHubs(ctx context.Context) ([]*models.DBHub, error) {
@@ -19,8 +21,17 @@ func (s *Storage) GetHubs(ctx context.Context) ([]*models.DBHub, error) {
 }
 
 func (s *Storage) CreateHub(ctx context.Context, hub *models.Hub) (int, error) {
-	q := `INSERT INTO hubs (user_id, name, description) VALUES ($1, $2, $3) RETURNING id`
-	rows, err := s.db.QueryContext(ctx, q, hub.OwnerID, hub.Name, hub.Description)
+	q1 := `INSERT INTO hubs (user_id, name, description) VALUES ($1, $2, $3) RETURNING id`
+	q2 := `INSERT INTO hubs (name, description) VALUES ($1, $2) RETURNING id`
+
+	var err error
+	var rows *sql.Rows
+
+	if hub.OwnerID != uuid.Nil {
+		rows, err = s.db.QueryContext(ctx, q1, hub.OwnerID, hub.Name, hub.Description)
+	} else {
+		rows, err = s.db.QueryContext(ctx, q2, hub.Name, hub.Description)
+	}
 	if err != nil {
 		return -1, e.Wrap("can't create hub in storage", err)
 	}
@@ -29,6 +40,7 @@ func (s *Storage) CreateHub(ctx context.Context, hub *models.Hub) (int, error) {
 	if rows.Next() {
 		rows.Scan(&id)
 	}
+	s.log.Debug("create hub", slog.Int("id", id))
 	return id, nil
 }
 
@@ -61,6 +73,7 @@ func (s *Storage) UpdateHub(ctx context.Context, hub *models.DBHub) error {
 	if err != nil {
 		return e.Wrap("can't update hub in storage", err)
 	}
+	s.log.Debug("update hub", slog.Int("id", hub.ID))
 	return nil
 }
 
@@ -71,5 +84,6 @@ func (s *Storage) DeleteHub(ctx context.Context, id int) error {
 	if err != nil {
 		return e.Wrap("can't delete hub from storage", err)
 	}
+	s.log.Debug("delete hub", slog.Int("id", id))
 	return nil
 }

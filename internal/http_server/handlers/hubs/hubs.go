@@ -40,7 +40,7 @@ func (h *HubHandler) HubCtx(next http.Handler) http.Handler {
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
 				h.log.Error("can't convert id to int", err)
-				render.Render(w, r, response.ErrInvalidParams)
+				render.Render(w, r, response.ErrInvalidParams) //nolint:errcheck
 				return
 			}
 			hub, err = h.db.GetHubByID(context.Background(), id)
@@ -66,8 +66,8 @@ func (h *HubHandler) CreateHub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	hub := data.Hub
-	
-	id, err := h.db.CreateHub(context.Background(), hub) // FIXME: bug with null owner_id
+
+	id, err := h.db.CreateHub(context.Background(), hub)
 	if err != nil {
 		h.log.Error("can't create hub", err)
 		render.Render(w, r, response.ErrStorageMistake)
