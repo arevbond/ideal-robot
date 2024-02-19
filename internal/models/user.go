@@ -13,7 +13,7 @@ type User struct {
 }
 
 type DBUser struct {
-	ID           uuid.UUID `db:"id" json:"-"`
+	ID           uuid.UUID `db:"id" json:"id"`
 	Username     string    `db:"username" json:"username"`
 	PasswordHash string    `db:"password_hash" json:"-"`
 	Email        string    `db:"email" json:"email"`

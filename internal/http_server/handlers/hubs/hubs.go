@@ -85,6 +85,7 @@ func (h *HubHandler) GetHub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
 func (h *HubHandler) UpdateHub(w http.ResponseWriter, r *http.Request) {
 	oldHub := r.Context().Value("hub").(*models.DBHub)
 
@@ -123,7 +124,7 @@ type HubRequest struct {
 func (h *HubRequest) Bind(r *http.Request) error {
 	// h.Hub is nil if no Hub fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.
-	if h.Hub == nil {
+	if h.Hub == nil || h.Hub.Name == "" {
 		return errors.New("missing required Hub fields.")
 	}
 

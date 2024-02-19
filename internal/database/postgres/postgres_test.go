@@ -178,7 +178,7 @@ func TestHub(t *testing.T) {
 
 	// create
 	for _, h := range hubs {
-		err := storage.CreateHub(context.Background(), h)
+		_, err := storage.CreateHub(context.Background(), h)
 		if err != nil {
 			t.Error("can't create hub", err)
 		}
@@ -274,7 +274,7 @@ func TestDevice(t *testing.T) {
 		}
 	}
 	for _, h := range hubs {
-		err := storage.CreateHub(context.Background(), h)
+		_, err := storage.CreateHub(context.Background(), h)
 		if err != nil {
 			t.Error("can't create hub", err)
 		}
@@ -386,7 +386,7 @@ func TestDeviceData(t *testing.T) {
 		}
 	}
 	for _, h := range hubs {
-		_ = storage.CreateHub(context.Background(), h)
+		_, _ = storage.CreateHub(context.Background(), h)
 	}
 	allHubsInDB, _ := storage.GetHubs(context.Background())
 
