@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -249,80 +250,36 @@ func TestHubHandler_CreateHub(t *testing.T) {
 
 }
 
-//func TestHubHandler_GetHub(t *testing.T) {
-//	mockDB := new(MockDB)
-//	hubHandler := &HubHandler{log: nil, db: mockDB}
-//
-//	expectedHub := &models.DBHub{ID: 123, Name: "test", Description: "test description"}
-//	mockDB.On("GetHubByID", mock.Anything, 123).Return(expectedHub, nil)
-//
-//	rctx := chi.NewRouteContext()
-//	rctx.URLParams.Add("id", strconv.Itoa(expectedHub.ID))
-//	req := httptest.NewRequest("GET", "/", nil)
-//	req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
-//	w := httptest.NewRecorder()
-//
-//	hubHandler.GetHub(w, req)
-//
-//	resp := w.Result()
-//
-//	assert.Equal(t, http.StatusOK, resp.StatusCode)
-//	mockDB.AssertExpectations(t)
-//}
+func TestGetHub(t *testing.T) {
+	hubID := 123
+	mockHub := &models.DBHub{ID: hubID, Name: "someHUB", OwnerID: uuid.NameSpaceDNS}
+	mockUser := &models.DBUser{ID: uuid.NameSpaceDNS, Username: "TestUser"}
 
-//
-//	func TestHubHandler_UpdateHub(t *testing.T) {
-//		mockDB := new(MockDB)
-//		hubHandler := &HubHandler{log: nil, db: mockDB}
-//
-//		expectedHub := &models.DBHub{ID: 123, Name: "test", Description: "test description"}
-//		mockDB.On("GetHubByID", mock.Anything, 123).Return(expectedHub, nil)
-//		mockDB.On("UpdateHub", mock.Anything, mock.Anything).Return(nil)
-//
-//		reqBody := strings.NewReader(`{"name":"updated test","description":"updated test description"}`)
-//		req := httptest.NewRequest("PUT", "/", reqBody)
-//		rctx := chi.NewRouteContext()
-//		rctx.URLParams.Add("id", strconv.Itoa(expectedHub.ID))
-//		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
-//		w := httptest.NewRecorder()
-//
-//		hubHandler.UpdateHub(w, req)
-//
-//		resp := w.Result()
-//
-//		assert.Equal(t, http.StatusOK, resp.StatusCode)
-//		mockDB.AssertExpectations(t)
-//	}
-//
-//	func TestHubHandler_DeleteHub(t *testing.T) {
-//		mockDB := new(MockDB)
-//		hubHandler := &HubHandler{log: nil, db: mockDB}
-//
-//		expectedHub := &models.DBHub{ID: 123, Name: "test", Description: "test description"}
-//		mockDB.On("GetHubByID", mock.Anything, 123).Return(expectedHub, nil)
-//		mockDB.On("DeleteHub", mock.Anything, expectedHub.ID).Return(nil)
-//
-//		rctx := chi.NewRouteContext()
-//		rctx.URLParams.Add("id", strconv.Itoa(expectedHub.ID))
-//		req := httptest.NewRequest("DELETE", "/", nil)
-//		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
-//		w := httptest.NewRecorder()
-//
-//		hubHandler.DeleteHub(w, req)
-//
-//		resp := w.Result()
-//
-//		assert.Equal(t, http.StatusOK, resp.StatusCode)
-//		mockDB.AssertExpectations(t)
-//	}
-//
-//	func TestHubRequest_Bind(t *testing.T) {
-//		validRequest := &HubRequest{Hub: &models.Hub{Name: "Test", Description: "Test Description"}}
-//		err := validRequest.Bind(nil)
-//		assert.NoError(t, err)
-//
-//		invalidRequest := &HubRequest{Hub: nil}
-//		err = invalidRequest.Bind(nil)
-//		assert.Error(t, err)
-//		assert.Equal(t, "missing required Hub fields.", err.Error())
-//	}
+	mockDB := new(MockDB)
+	hubHandler := &HubHandler{log: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})), db: mockDB}
+
+	req := httptest.NewRequest("GET", "/"+strconv.Itoa(hubID), nil)
+	w := httptest.NewRecorder()
+
+	ctx := context.WithValue(req.Context(), "hub", mockHub)
+	req = req.WithContext(ctx)
+
+	mockDB.On("GetUserByID", context.Background(), mockHub.OwnerID).Return(mockUser, nil)
+
+	hubHandler.GetHub(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	expectedResponse := HubResponse{Hub: mockHub, User: mockUser}
+	resp := w.Result()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal("can't read body from response")
+	}
+	var r HubResponse
+	err = json.Unmarshal(body, &r)
+	if err != nil {
+		t.Fatal("can't unmarshal body to HubResponse")
+	}
+	assert.Equal(t, r, expectedResponse)
+}
