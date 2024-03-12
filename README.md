@@ -30,4 +30,5 @@ DELETE /api/devices/{id}: Удалить устройство.
 POST /api/devices/{id}/data: Загрузить данные для конкретного устройства.
 GET /api/devices/{id}/data: Получить данные устройства по его идентификатору.
 GET /api/devices/{id}/data/{timestamp}: Получить данные устройства по его идентификатору и временной метке.
-GET /api/devices/{id}/data/latest: Получить последние данные устройства.```
+GET /api/devices/{id}/data/latest: Получить последние данные устройства.
+```
