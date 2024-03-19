@@ -2,9 +2,9 @@ package main
 
 import (
 	"HestiaHome/internal/config"
-	"HestiaHome/internal/database/postgres"
 	"HestiaHome/internal/http_server/handlers/hubs"
 	mwLoger "HestiaHome/internal/http_server/middleware/logger"
+	"HestiaHome/internal/storage/postgres"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -24,15 +24,15 @@ func main() {
 	log := setupLogger(cfg.Env)
 	log = log.With(slog.String("env", cfg.Env))
 
-	log.Info("Start server", slog.String("address", cfg.Address))
+	log.Info("Start server", slog.String("address", cfg.Server.Address))
 	log.Debug("Debug mode enable")
 
 	db, err := postgres.New(log, cfg)
 	if err != nil {
-		log.Error("Can't init database", err)
+		log.Error("Can't init storage", err)
 		os.Exit(1)
 	}
-	log.Info("Success connect to database")
+	log.Info("Success connect to storage")
 
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
@@ -50,7 +50,7 @@ func main() {
 		}
 	})
 
-	err = http.ListenAndServe(cfg.Address, router)
+	err = http.ListenAndServe(cfg.Server.Address, router)
 	if err != nil {
 		log.Error("can't init http server", err)
 	}

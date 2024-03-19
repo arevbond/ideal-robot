@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "users"(
     created_at TIMESTAMP(0) WITH TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS "hubs"(
+CREATE TABLE IF NOT EXISTS "rooms"(
    id SERIAL PRIMARY KEY NOT NULL UNIQUE,
    user_id UUID,
    FOREIGN KEY(user_id) REFERENCES "users"(id),
@@ -21,11 +21,10 @@ CREATE TABLE IF NOT EXISTS "hubs"(
 );
 CREATE TABLE IF NOT EXISTS "devices"(
     id SERIAL PRIMARY KEY NOT NULL UNIQUE,
-    hub_id SERIAL,
-    FOREIGN KEY (hub_id) REFERENCES "hubs"(id),
+    room_id SERIAL,
+    FOREIGN KEY (room_id) REFERENCES "rooms"(id),
     name VARCHAR(255) NOT NULL,
     type int NOT NULL,
-    location VARCHAR(255),
     status boolean default false
 );
 CREATE TABLE IF NOT EXISTS "devices_data"(

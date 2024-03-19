@@ -9,18 +9,18 @@ import (
 )
 
 type Config struct {
-	Env        string `yaml:"env" env-default:"dev"`
-	HttpServer `yaml:"http_server"`
-	DB         Database
+	Env     string       `yaml:"env" env-default:"dev"`
+	Server  ServerConfig `yaml:"http_server"`
+	Storage StorageConfig
 }
 
-type HttpServer struct {
+type ServerConfig struct {
 	Address     string        `yaml:"address"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"5s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
 }
 
-type Database struct {
+type StorageConfig struct {
 	Name     string `env:"POSTGRES_DB"`
 	Port     int    `env:"POSTGRES_PORT"`
 	Username string `env:"POSTGRES_USER"`
