@@ -1,9 +1,9 @@
 package hubs
 
 import (
-	"HestiaHome/internal/database"
 	"HestiaHome/internal/lib/api/response"
 	"HestiaHome/internal/models"
+	"HestiaHome/internal/storage"
 	"context"
 	"errors"
 	"github.com/go-chi/chi/v5"
@@ -16,10 +16,10 @@ import (
 
 type HubHandler struct {
 	log *slog.Logger
-	db  database.Storage
+	db  storage.Storage
 }
 
-func HubRoutes(log *slog.Logger, db database.Storage) chi.Router {
+func HubRoutes(log *slog.Logger, db storage.Storage) chi.Router {
 	r := chi.NewRouter()
 	hubHandler := &HubHandler{log, db}
 	r.Post("/", hubHandler.CreateHub)
@@ -34,7 +34,7 @@ func HubRoutes(log *slog.Logger, db database.Storage) chi.Router {
 
 func (h *HubHandler) HubCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var hub *models.DBHub
+		var hub *models.Room
 
 		if idStr := chi.URLParam(r, "id"); idStr != "" {
 			id, err := strconv.Atoi(idStr)
@@ -43,7 +43,7 @@ func (h *HubHandler) HubCtx(next http.Handler) http.Handler {
 				render.Render(w, r, response.ErrInvalidParams) //nolint:errcheck
 				return
 			}
-			hub, err = h.db.GetHubByID(context.Background(), id)
+			hub, err = h.db.GetRoomByID(context.Background(), id)
 			if err != nil {
 				render.Render(w, r, response.ErrNotFound)
 				return
@@ -65,20 +65,20 @@ func (h *HubHandler) CreateHub(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, response.ErrInvalidRequest(err))
 		return
 	}
-	hub := data.Hub
+	hub := data.CreateRoom
 
-	id, err := h.db.CreateHub(context.Background(), hub)
+	id, err := h.db.CreateRoom(context.Background(), hub)
 	if err != nil {
 		h.log.Error("can't create hub", err)
 		render.Render(w, r, response.ErrStorageMistake)
 		return
 	}
 	render.Status(r, http.StatusCreated)
-	render.Render(w, r, h.NewHubResponse(models.NewDBHub(id, hub)))
+	render.Render(w, r, h.NewHubResponse(models.NewRoom(id, hub)))
 }
 
 func (h *HubHandler) GetHub(w http.ResponseWriter, r *http.Request) {
-	hub := r.Context().Value("hub").(*models.DBHub)
+	hub := r.Context().Value("hub").(*models.Room)
 
 	if err := render.Render(w, r, h.NewHubResponse(hub)); err != nil {
 		render.Render(w, r, response.ErrRender(err))
@@ -87,18 +87,18 @@ func (h *HubHandler) GetHub(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HubHandler) UpdateHub(w http.ResponseWriter, r *http.Request) {
-	oldHub := r.Context().Value("hub").(*models.DBHub)
+	oldHub := r.Context().Value("hub").(*models.Room)
 
-	data := &HubRequest{Hub: &models.Hub{OwnerID: oldHub.OwnerID,
+	data := &HubRequest{CreateRoom: &models.CreateRoom{OwnerID: oldHub.OwnerID,
 		Name: oldHub.Name, Description: oldHub.Description}}
 	if err := render.Bind(r, data); err != nil {
 		h.log.Error("invalid params for request", err)
 		render.Render(w, r, response.ErrInvalidRequest(err))
 		return
 	}
-	hub := data.Hub
-	newHub := models.NewDBHub(oldHub.ID, hub)
-	err := h.db.UpdateHub(context.Background(), newHub)
+	hub := data.CreateRoom
+	newHub := models.NewRoom(oldHub.ID, hub)
+	err := h.db.UpdateRoom(context.Background(), newHub)
 	if err != nil {
 		render.Render(w, r, response.ErrInvalidRequest(err))
 		return
@@ -107,9 +107,9 @@ func (h *HubHandler) UpdateHub(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HubHandler) DeleteHub(w http.ResponseWriter, r *http.Request) {
-	hub := r.Context().Value("hub").(*models.DBHub)
+	hub := r.Context().Value("hub").(*models.Room)
 
-	err := h.db.DeleteHub(context.Background(), hub.ID)
+	err := h.db.DeleteRoom(context.Background(), hub.ID)
 	if err != nil {
 		render.Render(w, r, response.ErrInvalidRequest(err))
 		return
@@ -118,27 +118,27 @@ func (h *HubHandler) DeleteHub(w http.ResponseWriter, r *http.Request) {
 }
 
 type HubRequest struct {
-	*models.Hub
+	*models.CreateRoom
 }
 
 func (h *HubRequest) Bind(r *http.Request) error {
-	// h.Hub is nil if no Hub fields are sent in the request. Return an
+	// h.CreateRoom is nil if no CreateRoom fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.
-	if h.Hub == nil || h.Hub.Name == "" {
-		return errors.New("missing required Hub fields.")
+	if h.CreateRoom == nil || h.CreateRoom.Name == "" {
+		return errors.New("missing required CreateRoom fields.")
 	}
 
 	// just a post-process after a decode
-	h.Hub.Name = strings.ToLower(h.Hub.Name) // as an example, we down-case
+	h.CreateRoom.Name = strings.ToLower(h.CreateRoom.Name) // as an example, we down-case
 	return nil
 }
 
 type HubResponse struct {
-	Hub  *models.DBHub  `json:"hub"`
-	User *models.DBUser `json:"user,omitempty"`
+	Hub  *models.Room `json:"hub"`
+	User *models.User `json:"user,omitempty"`
 }
 
-func (h *HubHandler) NewHubResponse(hub *models.DBHub) *HubResponse {
+func (h *HubHandler) NewHubResponse(hub *models.Room) *HubResponse {
 	resp := &HubResponse{Hub: hub}
 	user, err := h.db.GetUserByID(context.Background(), hub.OwnerID)
 	if err == nil {

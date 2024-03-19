@@ -9,10 +9,10 @@ import (
 	"log/slog"
 )
 
-func (s *Storage) GetHubs(ctx context.Context) ([]*models.DBHub, error) {
-	q := `SELECT * from hubs`
+func (s *Storage) GetRooms(ctx context.Context) ([]*models.Room, error) {
+	q := `SELECT * from rooms`
 
-	hubs := []*models.DBHub{}
+	hubs := []*models.Room{}
 	err := s.db.SelectContext(ctx, &hubs, q)
 	if err != nil {
 		return nil, e.Wrap("cant get all hubs from storage", err)
@@ -20,9 +20,9 @@ func (s *Storage) GetHubs(ctx context.Context) ([]*models.DBHub, error) {
 	return hubs, nil
 }
 
-func (s *Storage) CreateHub(ctx context.Context, hub *models.Hub) (int, error) {
-	q1 := `INSERT INTO hubs (user_id, name, description) VALUES ($1, $2, $3) RETURNING id`
-	q2 := `INSERT INTO hubs (name, description) VALUES ($1, $2) RETURNING id`
+func (s *Storage) CreateRoom(ctx context.Context, hub *models.CreateRoom) (int, error) {
+	q1 := `INSERT INTO rooms (user_id, name, description) VALUES ($1, $2, $3) RETURNING id`
+	q2 := `INSERT INTO rooms (name, description) VALUES ($1, $2) RETURNING id`
 
 	var err error
 	var rows *sql.Rows
@@ -44,10 +44,10 @@ func (s *Storage) CreateHub(ctx context.Context, hub *models.Hub) (int, error) {
 	return id, nil
 }
 
-func (s *Storage) GetHubByID(ctx context.Context, id int) (*models.DBHub, error) {
-	q := `SELECT * FROM hubs WHERE id = $1`
+func (s *Storage) GetRoomByID(ctx context.Context, id int) (*models.Room, error) {
+	q := `SELECT * FROM rooms WHERE id = $1`
 
-	var hub models.DBHub
+	var hub models.Room
 	err := s.db.GetContext(ctx, &hub, q, id)
 	if err != nil {
 		return nil, e.Wrap("can't get hub by id in storage", err)
@@ -55,10 +55,10 @@ func (s *Storage) GetHubByID(ctx context.Context, id int) (*models.DBHub, error)
 	return &hub, nil
 }
 
-func (s *Storage) GetHubsByUserID(ctx context.Context, id uuid.UUID) ([]*models.DBHub, error) {
-	q := `SELECT * FROM hubs WHERE user_id = $1`
+func (s *Storage) GetRoomsByUserID(ctx context.Context, id uuid.UUID) ([]*models.Room, error) {
+	q := `SELECT * FROM rooms WHERE user_id = $1`
 
-	hubs := []*models.DBHub{}
+	hubs := []*models.Room{}
 	err := s.db.SelectContext(ctx, &hubs, q, id)
 	if err != nil {
 		return nil, e.Wrap("can't get hubs by user_id in storage", err)
@@ -66,8 +66,8 @@ func (s *Storage) GetHubsByUserID(ctx context.Context, id uuid.UUID) ([]*models.
 	return hubs, nil
 }
 
-func (s *Storage) UpdateHub(ctx context.Context, hub *models.DBHub) error {
-	q := `UPDATE hubs SET user_id = $1, name = $2, description = $3 WHERE id = $4`
+func (s *Storage) UpdateRoom(ctx context.Context, hub *models.Room) error {
+	q := `UPDATE rooms SET user_id = $1, name = $2, description = $3 WHERE id = $4`
 
 	_, err := s.db.ExecContext(ctx, q, hub.OwnerID, hub.Name, hub.Description, hub.ID)
 	if err != nil {
@@ -77,8 +77,8 @@ func (s *Storage) UpdateHub(ctx context.Context, hub *models.DBHub) error {
 	return nil
 }
 
-func (s *Storage) DeleteHub(ctx context.Context, id int) error {
-	q := `DELETE FROM hubs WHERE id = $1`
+func (s *Storage) DeleteRoom(ctx context.Context, id int) error {
+	q := `DELETE FROM rooms WHERE id = $1`
 
 	_, err := s.db.ExecContext(ctx, q, id)
 	if err != nil {

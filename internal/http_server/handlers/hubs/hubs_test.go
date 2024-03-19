@@ -1,9 +1,9 @@
 package hubs
 
 import (
-	"HestiaHome/internal/database"
 	"HestiaHome/internal/lib/api/response"
 	"HestiaHome/internal/models"
+	"HestiaHome/internal/storage"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -22,47 +22,47 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockDB is a mock implementation of the database.Storage interface
+// MockDB is a mock implementation of the storage.Storage interface
 type MockDB struct {
 	mock.Mock
 }
 
-func (m *MockDB) CreateHub(ctx context.Context, hub *models.Hub) (int, error) {
+func (m *MockDB) CreateRoom(ctx context.Context, hub *models.CreateRoom) (int, error) {
 	args := m.Called(ctx, hub)
 	return args.Int(0), args.Error(1)
 }
 
-func (m *MockDB) GetHubByID(ctx context.Context, id int) (*models.DBHub, error) {
+func (m *MockDB) GetRoomByID(ctx context.Context, id int) (*models.Room, error) {
 	args := m.Called(ctx, id)
-	return args.Get(0).(*models.DBHub), args.Error(1)
+	return args.Get(0).(*models.Room), args.Error(1)
 }
 
-func (m *MockDB) UpdateHub(ctx context.Context, hub *models.DBHub) error {
+func (m *MockDB) UpdateRoom(ctx context.Context, hub *models.Room) error {
 	args := m.Called(ctx, hub)
 	return args.Error(0)
 }
 
-func (m *MockDB) DeleteHub(ctx context.Context, id int) error {
+func (m *MockDB) DeleteRoom(ctx context.Context, id int) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
 
-func (m *MockDB) GetUserByID(ctx context.Context, id uuid.UUID) (*models.DBUser, error) {
+func (m *MockDB) GetUserByID(ctx context.Context, id uuid.UUID) (*models.User, error) {
 	args := m.Called(ctx, id)
-	return args.Get(0).(*models.DBUser), args.Error(1)
+	return args.Get(0).(*models.User), args.Error(1)
 }
 
-func (m *MockDB) GetHubsByUserID(ctx context.Context, id uuid.UUID) ([]*models.DBHub, error) {
+func (m *MockDB) GetRoomsByUserID(ctx context.Context, id uuid.UUID) ([]*models.Room, error) {
 	args := m.Called(ctx, id)
-	return args.Get(0).([]*models.DBHub), args.Error(1)
+	return args.Get(0).([]*models.Room), args.Error(1)
 }
 
 func TestHubHandler_HubCtx(t *testing.T) {
 	mockDB := new(MockDB)
 	hubHandler := &HubHandler{log: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})), db: mockDB}
 
-	expectedHub := &models.DBHub{ID: 123, Name: "test", Description: "test description"}
-	mockDB.On("GetHubByID", mock.Anything, 123).Return(expectedHub, nil)
+	expectedHub := &models.Room{ID: 123, Name: "test", Description: "test description"}
+	mockDB.On("GetRoomByID", mock.Anything, 123).Return(expectedHub, nil)
 
 	rctx := chi.NewRouteContext()
 	rctx.URLParams.Add("id", "123")
@@ -89,7 +89,7 @@ func TestHubHandler_CreateHub(t *testing.T) {
 			returnErr error
 		}
 		mockGetUserByID struct {
-			returnUser *models.DBUser
+			returnUser *models.User
 			returnErr  error
 		}
 		expectedResponse interface{}
@@ -98,7 +98,7 @@ func TestHubHandler_CreateHub(t *testing.T) {
 		{
 			name: "Successful creation without owner_id",
 			requestBody: HubRequest{
-				Hub: &models.Hub{
+				CreateRoom: &models.CreateRoom{
 					Name:        "hub_1",
 					Description: "random description",
 				},
@@ -109,11 +109,11 @@ func TestHubHandler_CreateHub(t *testing.T) {
 				returnErr error
 			}{123, nil},
 			mockGetUserByID: struct {
-				returnUser *models.DBUser
+				returnUser *models.User
 				returnErr  error
-			}{&models.DBUser{}, database.ErrUserNotExist},
+			}{&models.User{}, storage.ErrUserNotExist},
 			expectedResponse: HubResponse{
-				Hub: &models.DBHub{
+				Hub: &models.Room{
 					ID:          123,
 					OwnerID:     uuid.Nil,
 					Name:        "hub_1",
@@ -125,7 +125,7 @@ func TestHubHandler_CreateHub(t *testing.T) {
 		{
 			name: "Successful creation with owner_id",
 			requestBody: HubRequest{
-				Hub: &models.Hub{
+				CreateRoom: &models.CreateRoom{
 					OwnerID:     uuid.NameSpaceDNS,
 					Name:        "hub_1",
 					Description: "random description",
@@ -137,17 +137,17 @@ func TestHubHandler_CreateHub(t *testing.T) {
 				returnErr error
 			}{123, nil},
 			mockGetUserByID: struct {
-				returnUser *models.DBUser
+				returnUser *models.User
 				returnErr  error
-			}{&models.DBUser{ID: uuid.NameSpaceDNS, Username: "some-username"}, nil},
+			}{&models.User{ID: uuid.NameSpaceDNS, Username: "some-username"}, nil},
 			expectedResponse: HubResponse{
-				Hub: &models.DBHub{
+				Hub: &models.Room{
 					ID:          123,
 					OwnerID:     uuid.NameSpaceDNS,
 					Name:        "hub_1",
 					Description: "random description",
 				},
-				User: &models.DBUser{
+				User: &models.User{
 					ID:       uuid.NameSpaceDNS,
 					Username: "some-username",
 				},
@@ -157,7 +157,7 @@ func TestHubHandler_CreateHub(t *testing.T) {
 		{
 			name: "Error creation without name",
 			requestBody: HubRequest{
-				Hub: &models.Hub{
+				CreateRoom: &models.CreateRoom{
 					Description: "random description",
 				},
 			},
@@ -167,12 +167,12 @@ func TestHubHandler_CreateHub(t *testing.T) {
 				returnErr error
 			}{0, nil},
 			mockGetUserByID: struct {
-				returnUser *models.DBUser
+				returnUser *models.User
 				returnErr  error
-			}{&models.DBUser{}, nil},
+			}{&models.User{}, nil},
 			expectedResponse: response.ErrResponse{
 				StatusText: "Invalid request.",
-				ErrorText:  errors.New("missing required Hub fields.").Error(),
+				ErrorText:  errors.New("missing required CreateRoom fields.").Error(),
 			},
 			isError: true,
 		},
@@ -180,7 +180,7 @@ func TestHubHandler_CreateHub(t *testing.T) {
 		{
 			name: "Error storage mistake",
 			requestBody: HubRequest{
-				Hub: &models.Hub{
+				CreateRoom: &models.CreateRoom{
 					Name:        "random name",
 					Description: "random description",
 				},
@@ -191,9 +191,9 @@ func TestHubHandler_CreateHub(t *testing.T) {
 				returnErr error
 			}{0, errors.New("")},
 			mockGetUserByID: struct {
-				returnUser *models.DBUser
+				returnUser *models.User
 				returnErr  error
-			}{&models.DBUser{}, nil},
+			}{&models.User{}, nil},
 			expectedResponse: response.ErrResponse{
 				StatusText: "Storage mistake",
 			},
@@ -206,7 +206,7 @@ func TestHubHandler_CreateHub(t *testing.T) {
 			mockDB := new(MockDB)
 			hubHandler := &HubHandler{log: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})), db: mockDB}
 
-			mockDB.On("CreateHub", mock.Anything, mock.Anything).Return(tc.mockCreateHub.returnID, tc.mockCreateHub.returnErr)
+			mockDB.On("CreateRoom", mock.Anything, mock.Anything).Return(tc.mockCreateHub.returnID, tc.mockCreateHub.returnErr)
 			mockDB.On("GetUserByID", mock.Anything, mock.Anything).Return(tc.mockGetUserByID.returnUser, tc.mockGetUserByID.returnErr)
 
 			reqBody, err := json.Marshal(&tc.requestBody)
@@ -252,8 +252,8 @@ func TestHubHandler_CreateHub(t *testing.T) {
 
 func TestGetHub(t *testing.T) {
 	hubID := 123
-	mockHub := &models.DBHub{ID: hubID, Name: "someHUB", OwnerID: uuid.NameSpaceDNS}
-	mockUser := &models.DBUser{ID: uuid.NameSpaceDNS, Username: "TestUser"}
+	mockHub := &models.Room{ID: hubID, Name: "someHUB", OwnerID: uuid.NameSpaceDNS}
+	mockUser := &models.User{ID: uuid.NameSpaceDNS, Username: "TestUser"}
 
 	mockDB := new(MockDB)
 	hubHandler := &HubHandler{log: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})), db: mockDB}
