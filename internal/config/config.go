@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Env     string       `yaml:"env" env-default:"dev"`
-	Server  ServerConfig `yaml:"http_server"`
+	Server  ServerConfig `yaml:"server"`
 	Storage StorageConfig
 }
 

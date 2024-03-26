@@ -1,9 +1,9 @@
 package postgres
 
 import (
-	"HestiaHome/internal/lib/e"
 	"HestiaHome/internal/models"
 	"HestiaHome/internal/storage"
+	"HestiaHome/internal/utils/e"
 	"context"
 	"database/sql"
 	"github.com/google/uuid"

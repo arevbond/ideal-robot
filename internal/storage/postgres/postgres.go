@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"HestiaHome/internal/config"
-	"HestiaHome/internal/lib/e"
+	"HestiaHome/internal/utils/e"
 	"fmt"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"

@@ -1,9 +1,9 @@
 package hubs
 
 import (
-	"HestiaHome/internal/lib/api/response"
 	"HestiaHome/internal/models"
 	"HestiaHome/internal/storage"
+	"HestiaHome/internal/utils/api/response"
 	"bytes"
 	"context"
 	"encoding/json"

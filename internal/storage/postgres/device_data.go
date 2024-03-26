@@ -1,8 +1,8 @@
 package postgres
 
 import (
-	"HestiaHome/internal/lib/e"
 	"HestiaHome/internal/models"
+	"HestiaHome/internal/utils/e"
 	"context"
 )
 

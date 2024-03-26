@@ -1,11 +1,10 @@
 package postgres
 
 import (
-	"HestiaHome/internal/lib/e"
 	"HestiaHome/internal/models"
+	"HestiaHome/internal/utils/e"
 	"context"
 	"database/sql"
-	"github.com/google/uuid"
 	"log/slog"
 )
 
@@ -21,17 +20,13 @@ func (s *Storage) GetRooms(ctx context.Context) ([]*models.Room, error) {
 }
 
 func (s *Storage) CreateRoom(ctx context.Context, hub *models.CreateRoom) (int, error) {
-	q1 := `INSERT INTO rooms (user_id, name, description) VALUES ($1, $2, $3) RETURNING id`
-	q2 := `INSERT INTO rooms (name, description) VALUES ($1, $2) RETURNING id`
+	q1 := `INSERT INTO rooms (name, description) VALUES ($1, $2) RETURNING id`
 
 	var err error
 	var rows *sql.Rows
 
-	if hub.OwnerID != uuid.Nil {
-		rows, err = s.db.QueryContext(ctx, q1, hub.OwnerID, hub.Name, hub.Description)
-	} else {
-		rows, err = s.db.QueryContext(ctx, q2, hub.Name, hub.Description)
-	}
+	rows, err = s.db.QueryContext(ctx, q1, hub.Name, hub.Description)
+
 	if err != nil {
 		return -1, e.Wrap("can't create hub in storage", err)
 	}
@@ -55,21 +50,21 @@ func (s *Storage) GetRoomByID(ctx context.Context, id int) (*models.Room, error)
 	return &hub, nil
 }
 
-func (s *Storage) GetRoomsByUserID(ctx context.Context, id uuid.UUID) ([]*models.Room, error) {
-	q := `SELECT * FROM rooms WHERE user_id = $1`
-
-	hubs := []*models.Room{}
-	err := s.db.SelectContext(ctx, &hubs, q, id)
-	if err != nil {
-		return nil, e.Wrap("can't get hubs by user_id in storage", err)
-	}
-	return hubs, nil
-}
+//func (s *Storage) GetRoomsByUserID(ctx context.Context, id uuid.UUID) ([]*models.Room, error) {
+//	q := `SELECT * FROM rooms WHERE user_id = $1`
+//
+//	hubs := []*models.Room{}
+//	err := s.db.SelectContext(ctx, &hubs, q, id)
+//	if err != nil {
+//		return nil, e.Wrap("can't get hubs by user_id in storage", err)
+//	}
+//	return hubs, nil
+//}
 
 func (s *Storage) UpdateRoom(ctx context.Context, hub *models.Room) error {
-	q := `UPDATE rooms SET user_id = $1, name = $2, description = $3 WHERE id = $4`
+	q := `UPDATE rooms SET name = $1, description = $2 WHERE id = $3`
 
-	_, err := s.db.ExecContext(ctx, q, hub.OwnerID, hub.Name, hub.Description, hub.ID)
+	_, err := s.db.ExecContext(ctx, q, hub.Name, hub.Description, hub.ID)
 	if err != nil {
 		return e.Wrap("can't update hub in storage", err)
 	}
