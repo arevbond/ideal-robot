@@ -2,7 +2,7 @@ package main
 
 import (
 	"HestiaHome/internal/config"
-	"HestiaHome/internal/server/handlers/hubs"
+	"HestiaHome/internal/server/handlers"
 	mwLoger "HestiaHome/internal/server/middleware/logger"
 	"HestiaHome/internal/storage/postgres"
 	"github.com/go-chi/chi/v5"
@@ -41,14 +41,7 @@ func main() {
 	router.Use(mwLoger.New(log))
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
-	router.Mount("/hubs", hubs.HubRoutes(log, db))
-
-	router.Get("/", func(writer http.ResponseWriter, request *http.Request) {
-		_, err := writer.Write([]byte("Hello World"))
-		if err != nil {
-			log.Error("", err)
-		}
-	})
+	router.Mount("/", handlers.RoomRoutes(log, db))
 
 	err = http.ListenAndServe(cfg.Server.Address, router)
 	if err != nil {
@@ -82,7 +75,7 @@ func main() {
 //
 //	router.Mount("/hubs", hubs.HubRoutes(log, db))
 //
-//	router.Get("/", func(writer http.ResponseWriter, request *http.Request) {
+//	router.Rooms("/", func(writer http.ResponseWriter, request *http.Request) {
 //		_, err := writer.Write([]byte("Hello World"))
 //		if err != nil {
 //			log.Error("", err)

@@ -26,8 +26,9 @@ type UserRepository interface {
 }
 
 type RoomRepository interface {
-	CreateRoom(ctx context.Context, hub *models.CreateRoom) (int, error)
+	GetRooms(ctx context.Context) ([]*models.Room, error)
+	CreateRoom(ctx context.Context, room *models.CreateRoom) (int, error)
 	GetRoomByID(ctx context.Context, id int) (*models.Room, error)
-	UpdateRoom(ctx context.Context, hub *models.Room) error
+	UpdateRoom(ctx context.Context, room *models.Room) error
 	DeleteRoom(ctx context.Context, id int) error
 }

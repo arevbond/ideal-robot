@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
+	github.com/a-h/templ v0.2.648 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
@@ -23,7 +24,7 @@ require (
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
