@@ -28,11 +28,11 @@ func (s *Storage) GetDeviceByID(ctx context.Context, id int) (*models.Device, er
 	return &device, nil
 }
 
-func (s *Storage) GetDevicesByRoomID(ctx context.Context, hubID int, offset, limit int) ([]*models.Device, error) {
+func (s *Storage) GetDevicesByRoomID(ctx context.Context, roomID int, offset, limit int) ([]*models.Device, error) {
 	q := `SELECT * FROM devices WHERE room_id = $1 OFFSET $2 LIMIT $3`
 
 	devices := []*models.Device{}
-	err := s.db.SelectContext(ctx, &devices, q, hubID, offset, limit)
+	err := s.db.SelectContext(ctx, &devices, q, roomID, offset, limit)
 	if err != nil {
 		return nil, e.Wrap("can't get devices by hub_id from storage", err)
 	}

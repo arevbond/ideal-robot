@@ -14,6 +14,11 @@ templ Room(room *models.Room) {
     </head>
     <body>
       <h1>{ room.Name } </h1>
+      <form action="/" method="POST" hx-post="/device/">
+          <label>Room name:</label>
+          <input type="text" name="name"></input>
+          <input type="submit" value="Submit"></input>
+       </form>
     </body>
     </html>
 }

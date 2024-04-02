@@ -12,6 +12,7 @@ var (
 
 type Storage interface {
 	RoomRepository
+	DeviceRepository
 }
 
 type RoomRepository interface {
@@ -25,4 +26,5 @@ type RoomRepository interface {
 type DeviceRepository interface {
 	CreateDevice(ctx context.Context, device *models.CreateDevice) error
 	GetDeviceByID(ctx context.Context, id int) (*models.Device, error)
+	GetDevicesByRoomID(ctx context.Context, roomID int, offset, limit int) ([]*models.Device, error)
 }

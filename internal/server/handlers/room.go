@@ -28,13 +28,27 @@ func RoomRoutes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi
 	r.Route("/{id}", func(r chi.Router) {
 		r.Use(roomHandler.RoomCtx)
 		r.Get("/", roomHandler.GetRoom)
+		r.Post("/device/", roomHandler.CreateDevice)
+		r.Get("/device/{id}", roomHandler.GetDevice)
 	})
 	return r
 }
 
+func (h *roomHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+}
+
+func (h *roomHandler) GetDevice(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func (h *roomHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 	rm := r.Context().Value("room").(*models.Room)
-
+	_, err := h.service.GetDevices(rm.ID)
+	if err != nil {
+		return
+	}
 	h.ViewRoom(w, r, viewRoomProp{room: rm})
 }
 

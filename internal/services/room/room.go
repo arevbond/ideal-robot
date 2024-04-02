@@ -47,6 +47,27 @@ func (s *Service) GetRoom(id int) (*models.Room, error) {
 	return room, err
 }
 
+func (s *Service) CreateDevice(roomID int, name, writeTopic, readTopic string) error {
+	err := s.db.CreateDevice(context.Background(), &models.CreateDevice{
+		RoomID:     roomID,
+		Name:       name,
+		WriteTopic: writeTopic,
+		ReadTopic:  readTopic,
+	})
+	if err != nil {
+		return e.Wrap("can't create device", err)
+	}
+	return nil
+}
+
+func (s *Service) GetDevices(id int) ([]*models.Device, error) {
+	devices, err := s.db.GetDevicesByRoomID(context.Background(), id, 0, 10)
+	if err != nil {
+		return nil, e.Wrap("service can't get devices by room id", err)
+	}
+	return devices, nil
+}
+
 func (s *Service) DeleteRoom(id int) error {
 	err := s.db.DeleteRoom(context.Background(), id)
 	if err != nil {
