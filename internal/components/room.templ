@@ -1,9 +1,26 @@
 package components
 
 import "HestiaHome/internal/models"
+import "strconv"
 
 templ Room(room *models.Room) {
-    <h1>{ room.Name } </h1>
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <title>Document</title>
+    </head>
+    <body>
+      <h1>{ room.Name } </h1>
+      <form action="/" method="POST" hx-post="/device/">
+          <label>Room name:</label>
+          <input type="text" name="name"></input>
+          <input type="submit" value="Submit"></input>
+       </form>
+    </body>
+    </html>
 }
 
 templ Rooms(rooms []*models.Room) {
@@ -25,10 +42,12 @@ templ Rooms(rooms []*models.Room) {
        <h3>Rooms:</h3>
             <ul>
             for _, room := range rooms {
-              <a href="#"><li>{ room.Name }</li></a>
+              <a href={templ.SafeURL(strconv.Itoa(room.ID))}> <li>{room.Name}</li> </a>
            }
             </ul>
       </body>
 
 	</html>
 }
+
+

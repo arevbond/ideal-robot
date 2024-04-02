@@ -41,7 +41,7 @@ func main() {
 	router.Use(mwLoger.New(log))
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
-	router.Mount("/", handlers.RoomRoutes(log, db))
+	router.Mount("/", handlers.RoomRoutes(log, db, cfg.MQTT))
 
 	err = http.ListenAndServe(cfg.Server.Address, router)
 	if err != nil {
@@ -49,44 +49,6 @@ func main() {
 		os.Exit(1)
 	}
 }
-
-//func main() {
-//	cfg := config.New()
-//
-//	log := setupLogger(cfg.Env)
-//	log = log.With(slog.String("env", cfg.Env))
-//
-//	log.Info("Start server", slog.String("address", cfg.Server.Address))
-//	log.Debug("Debug mode enable")
-//
-//	db, err := postgres.New(log, cfg)
-//	if err != nil {
-//		log.Error("Can't init storage", err)
-//		os.Exit(1)
-//	}
-//	log.Info("Success connect to storage")
-//
-//	router := chi.NewRouter()
-//	router.Use(middleware.RequestID)
-//	router.Use(middleware.Recoverer)
-//	router.Use(middleware.URLFormat)
-//	router.Use(mwLoger.New(log))
-//	router.Use(render.SetContentType(render.ContentTypeJSON))
-//
-//	router.Mount("/hubs", hubs.HubRoutes(log, db))
-//
-//	router.Rooms("/", func(writer http.ResponseWriter, request *http.Request) {
-//		_, err := writer.Write([]byte("Hello World"))
-//		if err != nil {
-//			log.Error("", err)
-//		}
-//	})
-//
-//	err = http.ListenAndServe(cfg.Server.Address, router)
-//	if err != nil {
-//		log.Fatal("can't init http server", err)
-//	}
-//}
 
 func setupLogger(env string) *slog.Logger {
 	var logger *slog.Logger

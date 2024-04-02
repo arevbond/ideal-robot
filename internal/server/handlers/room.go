@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"HestiaHome/internal/components"
+	"HestiaHome/internal/config"
 	"HestiaHome/internal/models"
 	"HestiaHome/internal/services/room"
 	"HestiaHome/internal/storage"
@@ -19,22 +20,36 @@ type roomHandler struct {
 	log     *slog.Logger
 }
 
-func RoomRoutes(log *slog.Logger, db storage.Storage) chi.Router {
+func RoomRoutes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Router {
 	r := chi.NewRouter()
-	roomHandler := &roomHandler{room.New(log, db), log}
+	roomHandler := &roomHandler{room.New(log, db, cfg), log}
 	r.Get("/", roomHandler.Rooms)
 	r.Post("/", roomHandler.CreateRoom)
 	r.Route("/{id}", func(r chi.Router) {
 		r.Use(roomHandler.RoomCtx)
 		r.Get("/", roomHandler.GetRoom)
+		r.Post("/device/", roomHandler.CreateDevice)
+		r.Get("/device/{id}", roomHandler.GetDevice)
 	})
 	return r
 }
 
-func (h *roomHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
-	_ = r.Context().Value("room").(*models.Room)
+func (h *roomHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
 
-	return
+}
+
+func (h *roomHandler) GetDevice(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *roomHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
+	rm := r.Context().Value("room").(*models.Room)
+	_, err := h.service.GetDevices(rm.ID)
+	if err != nil {
+		return
+	}
+	h.ViewRoom(w, r, viewRoomProp{room: rm})
 }
 
 func (h *roomHandler) RoomCtx(next http.Handler) http.Handler {
@@ -48,7 +63,7 @@ func (h *roomHandler) RoomCtx(next http.Handler) http.Handler {
 				render.Render(w, r, response.ErrInvalidParams) //nolint:errcheck
 				return
 			}
-			room, err = h.service.GetRoomByID(id)
+			room, err = h.service.GetRoom(id)
 			if err != nil {
 				render.Render(w, r, response.ErrNotFound)
 				return
