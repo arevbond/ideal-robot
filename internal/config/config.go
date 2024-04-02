@@ -12,6 +12,7 @@ type Config struct {
 	Env     string       `yaml:"env" env-default:"dev"`
 	Server  ServerConfig `yaml:"server"`
 	Storage StorageConfig
+	MQTT    MQTTConfig
 }
 
 type ServerConfig struct {
@@ -25,6 +26,14 @@ type StorageConfig struct {
 	Port     int    `env:"POSTGRES_PORT"`
 	Username string `env:"POSTGRES_USER"`
 	Password string `env:"POSTGRES_PASSWORD"`
+}
+
+type MQTTConfig struct {
+	Address  string `env:"MQTT_ADDRESS"`
+	Port     int    `env:"MQTT_PORT"`
+	ClientID string `env:"MQTT_CLIENT_ID"`
+	Username string `env:"MQTT_USER"`
+	Password string `env:"MQTT_PASSWORD"`
 }
 
 func New() *Config {

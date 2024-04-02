@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"HestiaHome/internal/components"
+	"HestiaHome/internal/config"
 	"HestiaHome/internal/models"
 	"HestiaHome/internal/services/room"
 	"HestiaHome/internal/storage"
@@ -19,9 +20,9 @@ type roomHandler struct {
 	log     *slog.Logger
 }
 
-func RoomRoutes(log *slog.Logger, db storage.Storage) chi.Router {
+func RoomRoutes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Router {
 	r := chi.NewRouter()
-	roomHandler := &roomHandler{room.New(log, db), log}
+	roomHandler := &roomHandler{room.New(log, db, cfg), log}
 	r.Get("/", roomHandler.Rooms)
 	r.Post("/", roomHandler.CreateRoom)
 	r.Route("/{id}", func(r chi.Router) {
@@ -48,7 +49,7 @@ func (h *roomHandler) RoomCtx(next http.Handler) http.Handler {
 				render.Render(w, r, response.ErrInvalidParams) //nolint:errcheck
 				return
 			}
-			room, err = h.service.GetRoomByID(id)
+			room, err = h.service.GetRoom(id)
 			if err != nil {
 				render.Render(w, r, response.ErrNotFound)
 				return

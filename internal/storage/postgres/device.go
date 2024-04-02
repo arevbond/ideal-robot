@@ -7,9 +7,10 @@ import (
 )
 
 func (s *Storage) CreateDevice(ctx context.Context, device *models.CreateDevice) error {
-	q := `INSERT INTO devices (room_id, name, type, status) VALUES ($1, $2, $3, $4)`
+	q := `INSERT INTO devices (room_id, name, type, status, write_topic, read_topic) VALUES ($1, $2, $3, $4, $5, $6)`
 
-	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Type, device.Status)
+	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Type, device.Status,
+		device.WriteTopic, device.ReadTopic)
 	if err != nil {
 		return e.Wrap("cant create device in storage", err)
 	}
@@ -27,7 +28,7 @@ func (s *Storage) GetDeviceByID(ctx context.Context, id int) (*models.Device, er
 	return &device, nil
 }
 
-func (s *Storage) GetDevicesByHubID(ctx context.Context, hubID int, offset, limit int) ([]*models.Device, error) {
+func (s *Storage) GetDevicesByRoomID(ctx context.Context, hubID int, offset, limit int) ([]*models.Device, error) {
 	q := `SELECT * FROM devices WHERE room_id = $1 OFFSET $2 LIMIT $3`
 
 	devices := []*models.Device{}
@@ -39,9 +40,10 @@ func (s *Storage) GetDevicesByHubID(ctx context.Context, hubID int, offset, limi
 }
 
 func (s *Storage) UpdateDevice(ctx context.Context, device *models.Device) error {
-	q := `UPDATE devices SET room_id = $1, name = $2, type = $3, status = $4 WHERE id = $5`
+	q := `UPDATE devices SET room_id = $1, name = $2, type = $3, status = $4, write_topic = $5, read_topic = $6 WHERE id = $7`
 
-	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Type, device.Status, device.ID)
+	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Type, device.Status,
+		device.WriteTopic, device.ReadTopic, device.ID)
 	if err != nil {
 		return e.Wrap("can't update device in storage", err)
 	}

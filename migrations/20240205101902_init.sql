@@ -25,7 +25,9 @@ CREATE TABLE IF NOT EXISTS "devices"(
     FOREIGN KEY (room_id) REFERENCES "rooms"(id),
     name VARCHAR(255) NOT NULL,
     type int NOT NULL,
-    status boolean default false
+    status boolean default false,
+    write_topic VARCHAR(255),
+    read_topic VARCHAR(255)
 );
 CREATE TABLE IF NOT EXISTS "devices_data"(
     id SERIAL PRIMARY KEY NOT NULL UNIQUE,

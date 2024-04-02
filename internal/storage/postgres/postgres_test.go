@@ -301,7 +301,7 @@ func TestDevice(t *testing.T) {
 		if err != nil {
 			t.Error("can't create device in db", err)
 		}
-		devicesInDBByHubID, err := strg.GetDevicesByHubID(context.Background(), h.ID, 0, 100)
+		devicesInDBByHubID, err := strg.GetDevicesByRoomID(context.Background(), h.ID, 0, 100)
 		if err != nil {
 			t.Error("can't get devices by hub id", err)
 		}
@@ -403,7 +403,7 @@ func TestDeviceData(t *testing.T) {
 		if err != nil {
 			t.Error("can't create device in db", err)
 		}
-		devicesInDBByHubID, err := strg.GetDevicesByHubID(context.Background(), h.ID, 0, 100)
+		devicesInDBByHubID, err := strg.GetDevicesByRoomID(context.Background(), h.ID, 0, 100)
 		if err != nil {
 			t.Error("can't get devices by hub id", err)
 		}
