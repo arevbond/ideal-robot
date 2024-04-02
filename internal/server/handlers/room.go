@@ -32,9 +32,9 @@ func RoomRoutes(log *slog.Logger, db storage.Storage) chi.Router {
 }
 
 func (h *roomHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
-	_ = r.Context().Value("room").(*models.Room)
+	rm := r.Context().Value("room").(*models.Room)
 
-	return
+	h.ViewRoom(w, r, viewRoomProp{room: rm})
 }
 
 func (h *roomHandler) RoomCtx(next http.Handler) http.Handler {

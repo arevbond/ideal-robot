@@ -1,6 +1,7 @@
 package components
 
 import "HestiaHome/internal/models"
+import "strconv"
 
 templ Room(room *models.Room) {
     <h1>{ room.Name } </h1>
@@ -25,10 +26,12 @@ templ Rooms(rooms []*models.Room) {
        <h3>Rooms:</h3>
             <ul>
             for _, room := range rooms {
-              <a href="#"><li>{ room.Name }</li></a>
+              <a href={templ.SafeURL(strconv.Itoa(room.ID))}> <li>{room.Name}</li> </a>
            }
             </ul>
       </body>
 
 	</html>
 }
+
+
