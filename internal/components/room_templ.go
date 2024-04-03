@@ -12,6 +12,7 @@ import "bytes"
 
 import "HestiaHome/internal/models"
 import "strconv"
+import "fmt"
 
 func Room(room *models.Room) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -26,20 +27,29 @@ func Room(room *models.Room) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Room</title><script src=\"internal/assets/js/htmx.min.js\"></script></head><body><h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(room.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/components/room.templ`, Line: 7, Col: 19}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/components/room.templ`, Line: 18, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1><form action=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 templ.SafeURL = templ.URL(fmt.Sprintf("/%d/device", room.ID))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" method=\"POST\"><input type=\"hidden\" name=\"room_id\" value=\"1\"> <label>Device name</label> <input type=\"text\" name=\"name\"> <select name=\"type\"><option value=\"temperature\">Temperature</option> <option value=\"humidity\">Humidity</option> <option value=\"motion\">Motion</option></select> <label>Write topic</label> <input type=\"text\" name=\"write_topic\"> <label>Read topic</label> <input type=\"text\" name=\"read_topic\"> <input type=\"submit\" value=\"Submit\"></form></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +60,7 @@ func Room(room *models.Room) templ.Component {
 	})
 }
 
-func Rooms(rooms []*models.Room) templ.Component {
+func Rooms(rooms []*models.Room, devices []*models.Device) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -58,12 +68,12 @@ func Rooms(rooms []*models.Room) templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var3 == nil {
-			templ_7745c5c3_Var3 = templ.NopComponent
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Rooms</title><script src=\"internal/assets/js/htmx.min.js\"></script></head><body><form action=\"/\" method=\"POST\" hx-post=\"/\"><label>Room name:</label> <input type=\"text\" name=\"name\"> <input type=\"submit\" value=\"Submit\"></form><h3>Rooms:</h3><ul>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Rooms</title><script src=\"internal/assets/js/htmx.min.js\"></script><style>\n                /* Стилизация таблиц */\n                table {\n                    width: 100%;\n                    border-collapse: collapse;\n                    margin-bottom: 20px;\n                }\n                th, td {\n                    border: 1px solid #dddddd;\n                    text-align: left;\n                    padding: 8px;\n                }\n                th {\n                    background-color: #f2f2f2;\n                }\n            </style></head><body><form action=\"/\" method=\"POST\" hx-post=\"/\"><label>Room name:</label> <input type=\"text\" name=\"name\"> <input type=\"submit\" value=\"Submit\"></form><h3>Rooms:</h3><ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -72,8 +82,8 @@ func Rooms(rooms []*models.Room) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 templ.SafeURL = templ.SafeURL(strconv.Itoa(room.ID))
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
+			var templ_7745c5c3_Var5 templ.SafeURL = templ.SafeURL(strconv.Itoa(room.ID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -81,12 +91,12 @@ func Rooms(rooms []*models.Room) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(room.Name)
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(room.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/components/room.templ`, Line: 29, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/components/room.templ`, Line: 74, Col: 76}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -95,7 +105,7 @@ func Rooms(rooms []*models.Room) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul><h1>Sensors Data</h1><h2>Sensor 1</h2><table><tr><th>Name</th><th>Category</th><th>Value</th></tr><tr><td>Temperature Sensor</td><td>Temperature</td><td>25°C</td></tr><tr><td>Humidity Sensor</td><td>Humidity</td><td>50%</td></tr><!-- Другие строки для Sensor 1 --></table><h2>Sensor 2</h2><table><tr><th>Name</th><th>Category</th><th>Value</th></tr><tr><td>Motion Sensor</td><td>Motion</td><td>Detected</td></tr><!-- Другие строки для Sensor 2 --></table><!-- Другие таблицы --></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

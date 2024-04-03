@@ -21,11 +21,12 @@ CREATE TABLE IF NOT EXISTS "rooms"(
 );
 CREATE TABLE IF NOT EXISTS "devices"(
     id SERIAL PRIMARY KEY NOT NULL UNIQUE,
-    room_id SERIAL,
-    FOREIGN KEY (room_id) REFERENCES "rooms"(id),
+    room_id INT,
+    FOREIGN KEY (room_id) REFERENCES "rooms"(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
-    type int NOT NULL,
+    category int NOT NULL,
     status boolean default false,
+    hidden boolean default false,
     write_topic VARCHAR(255),
     read_topic VARCHAR(255)
 );

@@ -2,28 +2,41 @@ package components
 
 import "HestiaHome/internal/models"
 import "strconv"
+import "fmt"
 
 templ Room(room *models.Room) {
     <!doctype html>
     <html lang="en">
     <head>
-    <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-     <title>Document</title>
+    <meta charset="UTF-8"/>
+     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+     <title>Room</title>
+     <script src="internal/assets/js/htmx.min.js"></script>
     </head>
     <body>
       <h1>{ room.Name } </h1>
-      <form action="/" method="POST" hx-post="/device/">
-          <label>Room name:</label>
-          <input type="text" name="name"></input>
-          <input type="submit" value="Submit"></input>
+      <form action={templ.URL(fmt.Sprintf("/%d/device", room.ID))} method="POST">
+          <input type="hidden" name="room_id" value="1"/>
+          <label>Device name</label>
+          <input type="text" name="name"/>
+          <select name="type">
+            <option value="temperature">Temperature</option>
+            <option value="humidity">Humidity</option>
+            <option value="motion">Motion</option>
+          </select>
+          <label>Write topic</label>
+          <input type="text" name="write_topic"/>
+          <label>Read topic</label>
+          <input type="text" name="read_topic"/>
+          <input type="submit" value="Submit"/>
        </form>
+
     </body>
     </html>
 }
 
-templ Rooms(rooms []*models.Room) {
+templ Rooms(rooms []*models.Room, devices []*models.Device) {
 	<!doctype html>
 	<html lang="en">
 	<head>
@@ -32,12 +45,28 @@ templ Rooms(rooms []*models.Room) {
         <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
         <title>Rooms</title>
         <script src="internal/assets/js/htmx.min.js"></script>
+        <style>
+                /* Стилизация таблиц */
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+                th, td {
+                    border: 1px solid #dddddd;
+                    text-align: left;
+                    padding: 8px;
+                }
+                th {
+                    background-color: #f2f2f2;
+                }
+            </style>
 	</head>
 	 <body>
       	   <form action="/" method="POST" hx-post="/">
             <label>Room name:</label>
-            <input type="text" name="name"></input>
-            <input type="submit" value="Submit"></input>
+            <input type="text" name="name"/>
+            <input type="submit" value="Submit"/>
           </form>
        <h3>Rooms:</h3>
             <ul>
@@ -45,6 +74,44 @@ templ Rooms(rooms []*models.Room) {
               <a href={templ.SafeURL(strconv.Itoa(room.ID))}> <li>{room.Name}</li> </a>
            }
             </ul>
+        <h1>Sensors Data</h1>
+
+            <h2>Sensor 1</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Temperature Sensor</td>
+                    <td>Temperature</td>
+                    <td>25°C</td>
+                </tr>
+                <tr>
+                    <td>Humidity Sensor</td>
+                    <td>Humidity</td>
+                    <td>50%</td>
+                </tr>
+                <!-- Другие строки для Sensor 1 -->
+            </table>
+
+            <h2>Sensor 2</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Motion Sensor</td>
+                    <td>Motion</td>
+                    <td>Detected</td>
+                </tr>
+                <!-- Другие строки для Sensor 2 -->
+            </table>
+
+            <!-- Другие таблицы -->
       </body>
 
 	</html>

@@ -27,6 +27,9 @@ func New(address string, port int, clientID, username, password string) mqtt2.Cl
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
 	client := mqtt2.NewClient(opts)
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		panic(token.Error())
+	}
 	return client
 }
 

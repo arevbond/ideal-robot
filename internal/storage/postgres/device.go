@@ -6,11 +6,10 @@ import (
 	"context"
 )
 
-func (s *Storage) CreateDevice(ctx context.Context, device *models.CreateDevice) error {
-	q := `INSERT INTO devices (room_id, name, type, status, write_topic, read_topic) VALUES ($1, $2, $3, $4, $5, $6)`
+func (s *Storage) CreateDevice(ctx context.Context, device *models.Device) error {
+	q := `INSERT INTO devices (id, room_id, name, category, hidden, status) VALUES ($1, $2, $3, $4, $5, $6)`
 
-	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Type, device.Status,
-		device.WriteTopic, device.ReadTopic)
+	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Category, device.Status)
 	if err != nil {
 		return e.Wrap("cant create device in storage", err)
 	}
@@ -40,10 +39,9 @@ func (s *Storage) GetDevicesByRoomID(ctx context.Context, roomID int, offset, li
 }
 
 func (s *Storage) UpdateDevice(ctx context.Context, device *models.Device) error {
-	q := `UPDATE devices SET room_id = $1, name = $2, type = $3, status = $4, write_topic = $5, read_topic = $6 WHERE id = $7`
+	q := `UPDATE devices SET room_id = $1, name = $2, category = $3, hidden = $4, status = $5  WHERE id = $6`
 
-	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Type, device.Status,
-		device.WriteTopic, device.ReadTopic, device.ID)
+	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Category, device.Hidden, device.Status, device.ID)
 	if err != nil {
 		return e.Wrap("can't update device in storage", err)
 	}
