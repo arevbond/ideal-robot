@@ -10,10 +10,10 @@ import (
 var DevicesData = make(chan *DeviceData, 100)
 
 type DeviceData struct {
-	ID       int         `json:"uniq_id"`
-	Name     string      `json:"device_name"`
-	Category Category    `json:"category"`
-	Data     interface{} `json:"data"`
+	DeviceID   int         `json:"uniq_id"`
+	DeviceName string      `json:"device_name"`
+	Category   Category    `json:"category"`
+	Data       interface{} `json:"data"`
 }
 
 type Category string
@@ -24,6 +24,19 @@ const (
 	Humidity             = "humidity"
 	Motion               = "motion"
 )
+
+func (c Category) Number() int {
+	switch c {
+	case Temperature:
+		return 1
+	case Humidity:
+		return 2
+	case Motion:
+		return 3
+	default:
+		return 0
+	}
+}
 
 var messagePubHandler mqtt2.MessageHandler = func(client mqtt2.Client, msg mqtt2.Message) {
 	var data *DeviceData

@@ -24,27 +24,6 @@ func New(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) *Service {
 	return &Service{log: log, db: db, mqttClient: client}
 }
 
-func processData(log *slog.Logger, db storage.Storage) {
-	for {
-		data := <-mqtt.DevicesData
-		extractDataByCategory(data)
-		log.Info("receive data from channel", slog.Any("data", data))
-	}
-}
-
-func extractDataByCategory(deviceData *mqtt.DeviceData) {
-	switch deviceData.Category {
-	case mqtt.Temperature:
-		if val, ok := deviceData.Data.(float64); ok {
-			deviceData.Data = val
-		}
-	case mqtt.Humidity:
-		if val, ok := deviceData.Data.(int); ok {
-			deviceData.Data = val
-		}
-	}
-}
-
 func (s *Service) Rooms() ([]*models.Room, error) {
 	rooms, err := s.db.GetRooms(context.Background())
 	if err != nil {
@@ -73,7 +52,7 @@ func (s *Service) GetRoom(id int) (*models.Room, error) {
 //func (s *Service) CreateDevice(roomID int, name, writeTopic, readTopic string, category int) error {
 //	err := s.db.CreateDevice(context.Background(), &models.CreateDevice{
 //		RoomID:     roomID,
-//		Name:       name,
+//		DeviceName:       name,
 //		Category:   category,
 //		WriteTopic: writeTopic,
 //		ReadTopic:  readTopic,

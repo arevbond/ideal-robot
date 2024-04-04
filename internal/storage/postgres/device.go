@@ -2,14 +2,27 @@ package postgres
 
 import (
 	"HestiaHome/internal/models"
+	"HestiaHome/internal/storage"
 	"HestiaHome/internal/utils/e"
 	"context"
+	"database/sql"
 )
 
 func (s *Storage) CreateDevice(ctx context.Context, device *models.Device) error {
-	q := `INSERT INTO devices (id, room_id, name, category, hidden, status) VALUES ($1, $2, $3, $4, $5, $6)`
+	var q string
+	if device.RoomID == nil {
+		// Если room_id равен 0, пропустить room_id в запросе
+		q = `INSERT INTO devices (id, name, category, status, hidden) VALUES ($1, $2, $3, $4, $5)`
+		_, err := s.db.ExecContext(ctx, q, device.ID, device.Name, device.Category, device.Status, device.Hidden)
+		if err != nil {
+			return e.Wrap("cant create device in storage", err)
+		}
+		return nil
+	}
 
-	_, err := s.db.ExecContext(ctx, q, device.RoomID, device.Name, device.Category, device.Status)
+	// Если room_id не равен 0, включить room_id в запрос
+	q = `INSERT INTO devices (id, room_id, name, category, status, hidden) VALUES ($1, $2, $3, $4, $5, $6)`
+	_, err := s.db.ExecContext(ctx, q, device.ID, device.RoomID, device.Name, device.Category, device.Status, device.Hidden)
 	if err != nil {
 		return e.Wrap("cant create device in storage", err)
 	}
@@ -21,6 +34,11 @@ func (s *Storage) GetDeviceByID(ctx context.Context, id int) (*models.Device, er
 
 	var device models.Device
 	err := s.db.GetContext(ctx, &device, q, id)
+
+	if err == sql.ErrNoRows {
+		return nil, storage.ErrDeviceNotExist
+	}
+
 	if err != nil {
 		return nil, e.Wrap("can't get device by id from storage", err)
 	}

@@ -67,7 +67,7 @@ func getCategory(category string) int {
 
 //func (h *roomHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 //	rm := r.Context().Value("room").(*models.Room)
-//	_, err := h.service.GetDevices(rm.ID)
+//	_, err := h.service.GetDevices(rm.DeviceID)
 //	if err != nil {
 //		return
 //	}
