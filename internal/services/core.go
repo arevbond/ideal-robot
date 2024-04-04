@@ -19,7 +19,30 @@ type Service struct {
 
 func New(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) *Service {
 	client := mqtt.New(cfg.Address, cfg.Port, cfg.ClientID, cfg.Username, cfg.Password)
+	mqtt.Subscribe("topic/test", client)
+	go processData(log, db)
 	return &Service{log: log, db: db, mqttClient: client}
+}
+
+func processData(log *slog.Logger, db storage.Storage) {
+	for {
+		data := <-mqtt.DevicesData
+		extractDataByCategory(data)
+		log.Info("receive data from channel", slog.Any("data", data))
+	}
+}
+
+func extractDataByCategory(deviceData *mqtt.DeviceData) {
+	switch deviceData.Category {
+	case mqtt.Temperature:
+		if val, ok := deviceData.Data.(float64); ok {
+			deviceData.Data = val
+		}
+	case mqtt.Humidity:
+		if val, ok := deviceData.Data.(int); ok {
+			deviceData.Data = val
+		}
+	}
 }
 
 func (s *Service) Rooms() ([]*models.Room, error) {

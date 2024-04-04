@@ -26,15 +26,13 @@ CREATE TABLE IF NOT EXISTS "devices"(
     name VARCHAR(255) NOT NULL,
     category int NOT NULL,
     status boolean default false,
-    hidden boolean default false,
-    write_topic VARCHAR(255),
-    read_topic VARCHAR(255)
+    hidden boolean default false
 );
 CREATE TABLE IF NOT EXISTS "devices_data"(
     id SERIAL PRIMARY KEY NOT NULL UNIQUE,
-    device_id SERIAL,
+    device_id INT,
     FOREIGN KEY(device_id) REFERENCES "devices"(id),
-    value VARCHAR(255),
+    value JSONB,
     unit VARCHAR(255),
     received_at TIMESTAMP(0) WITH TIME ZONE
 );

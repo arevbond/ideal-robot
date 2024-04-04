@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"HestiaHome/internal/components"
 	"HestiaHome/internal/config"
 	"HestiaHome/internal/models"
+	"HestiaHome/internal/publicapi/components"
 	"HestiaHome/internal/services"
 	"HestiaHome/internal/storage"
 	"HestiaHome/internal/utils/api/response"

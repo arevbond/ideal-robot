@@ -1,12 +1,37 @@
 package mqtt
 
 import (
+	"encoding/json"
 	"fmt"
 	mqtt2 "github.com/eclipse/paho.mqtt.golang"
+	"log"
+)
+
+var DevicesData = make(chan *DeviceData, 100)
+
+type DeviceData struct {
+	ID       int         `json:"uniq_id"`
+	Name     string      `json:"device_name"`
+	Category Category    `json:"category"`
+	Data     interface{} `json:"data"`
+}
+
+type Category string
+
+const (
+	Unknown     Category = ""
+	Temperature Category = "temperature"
+	Humidity             = "humidity"
+	Motion               = "motion"
 )
 
 var messagePubHandler mqtt2.MessageHandler = func(client mqtt2.Client, msg mqtt2.Message) {
-	fmt.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
+	var data *DeviceData
+	if err := json.Unmarshal(msg.Payload(), &data); err != nil {
+		log.Println("can't unmarshal json", err)
+	} else {
+		DevicesData <- data
+	}
 }
 
 var connectHandler mqtt2.OnConnectHandler = func(client mqtt2.Client) {
@@ -23,14 +48,14 @@ func New(address string, port int, clientID, username, password string) mqtt2.Cl
 	opts.SetClientID(clientID)
 	opts.SetUsername(username)
 	opts.SetPassword(password)
-	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
-	client := mqtt2.NewClient(opts)
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
+	opts.SetDefaultPublishHandler(messagePubHandler)
+	mqttClient := mqtt2.NewClient(opts)
+	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
-	return client
+	return mqttClient
 }
 
 func Subscribe(topic string, client mqtt2.Client) {

@@ -34,7 +34,7 @@ func Room(room *models.Room) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(room.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/components/room.templ`, Line: 18, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/room.templ`, Line: 18, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -73,7 +73,7 @@ func Rooms(rooms []*models.Room, devices []*models.Device) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Rooms</title><script src=\"internal/assets/js/htmx.min.js\"></script><style>\n                /* Стилизация таблиц */\n                table {\n                    width: 100%;\n                    border-collapse: collapse;\n                    margin-bottom: 20px;\n                }\n                th, td {\n                    border: 1px solid #dddddd;\n                    text-align: left;\n                    padding: 8px;\n                }\n                th {\n                    background-color: #f2f2f2;\n                }\n            </style></head><body><form action=\"/\" method=\"POST\" hx-post=\"/\"><label>Room name:</label> <input type=\"text\" name=\"name\"> <input type=\"submit\" value=\"Submit\"></form><h3>Rooms:</h3><ul>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Rooms</title><script src=\"internal/assets/js/htmx.min.js\"></script><style>\n                /* Стилизация таблиц */\n                table {\n                    width: 60%;\n                    border-collapse: collapse;\n                    margin-bottom: 20px;\n                }\n                th, td {\n                    border: 1px solid #dddddd;\n                    text-align: left;\n                    padding: 6px;\n                }\n                th {\n                    background-color: #f2f2f2;\n                }\n            </style></head><body><form action=\"/\" method=\"POST\" hx-post=\"/\"><label>Room name:</label> <input type=\"text\" name=\"name\"> <input type=\"submit\" value=\"Submit\"></form><h3>Rooms:</h3><ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,7 +94,7 @@ func Rooms(rooms []*models.Room, devices []*models.Device) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(room.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/components/room.templ`, Line: 74, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/room.templ`, Line: 74, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
