@@ -2,6 +2,7 @@ package main
 
 import (
 	"HestiaHome/internal/config"
+	mqtt_server "HestiaHome/internal/mqtt-server"
 	"HestiaHome/internal/publicapi/handlers"
 	mwLoger "HestiaHome/internal/publicapi/middleware/logger"
 	"HestiaHome/internal/storage/postgres"
@@ -25,6 +26,10 @@ func main() {
 
 	log.Info("Start server", slog.String("address", cfg.Server.Address))
 	log.Debug("Debug mode enable")
+
+	go func() {
+		mqtt_server.New()
+	}()
 
 	db, err := postgres.New(log, cfg)
 	if err != nil {

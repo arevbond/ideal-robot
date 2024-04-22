@@ -19,6 +19,7 @@ func processData(log *slog.Logger, db storage.Storage) {
 		if err != nil {
 			log.Error("can't write data in storage", slog.Any("error", err))
 		}
+		time.Sleep(1 * time.Second)
 	}
 }
 
