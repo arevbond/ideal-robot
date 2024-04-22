@@ -26,6 +26,8 @@ type RoomRepository interface {
 }
 
 type DeviceRepository interface {
+	GetDevicesWithData(ctx context.Context) ([]*models.DeviceWithData, error)
+	GetDevices(ctx context.Context) ([]*models.Device, error)
 	CreateDevice(ctx context.Context, device *models.Device) error
 	GetDeviceByID(ctx context.Context, id int) (*models.Device, error)
 	GetDevicesByRoomID(ctx context.Context, roomID int, offset, limit int) ([]*models.Device, error)
@@ -33,4 +35,5 @@ type DeviceRepository interface {
 
 type DeviceDataRepository interface {
 	CreateDeviceData(ctx context.Context, deviceData *models.CreateDeviceData) error
+	GetDeviceDataByID(ctx context.Context, id int) (*models.DeviceData, error)
 }

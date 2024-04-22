@@ -36,7 +36,7 @@ templ Room(room *models.Room) {
     </html>
 }
 
-templ Rooms(rooms []*models.Room, devices []*models.Device) {
+templ Rooms(rooms []*models.Room, devices []*models.DeviceWithData) {
 	<!doctype html>
 	<html lang="en">
 	<head>
@@ -74,46 +74,27 @@ templ Rooms(rooms []*models.Room, devices []*models.Device) {
               <a href={templ.SafeURL(strconv.Itoa(room.ID))}> <li>{room.Name}</li> </a>
            }
             </ul>
+
         <h1>Sensors Data</h1>
+        for _, device := range devices {
 
-            <h2>Sensor 1</h2>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Value</th>
-                </tr>
-                <tr>
-                    <td>Temperature Sensor</td>
-                    <td>Temperature</td>
-                    <td>25°C</td>
-                </tr>
-                <tr>
-                    <td>Humidity Sensor</td>
-                    <td>Humidity</td>
-                    <td>50%</td>
-                </tr>
-                <!-- Другие строки для Sensor 1 -->
-            </table>
-
-            <h2>Sensor 2</h2>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Value</th>
-                </tr>
-                <tr>
-                    <td>Motion Sensor</td>
-                    <td>Motion</td>
-                    <td>Detected</td>
-                </tr>
-                <!-- Другие строки для Sensor 2 -->
-            </table>
-
-            <!-- Другие таблицы -->
+                <h2>{ strconv.Itoa(device.ID) }</h2>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Unit</th>
+                        <th>Received At</th>
+                    </tr>
+                    <tr>
+                        <td>{device.Name}r</td>
+                         <td> {strconv.FormatFloat(device.Value.Value, 'f', -1, 64)} </td>
+                        <td> { device.Unit } </td>
+                      //  <td>{ device.ReceivedAt..Format("2006-01-02 15:04:05") }</td>
+                    </tr>
+                </table>
+        }
       </body>
-
 	</html>
 }
 

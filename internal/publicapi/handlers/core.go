@@ -6,13 +6,9 @@ import (
 	"HestiaHome/internal/publicapi/components"
 	"HestiaHome/internal/services"
 	"HestiaHome/internal/storage"
-	"HestiaHome/internal/utils/api/response"
-	"context"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
-	"strconv"
 )
 
 type roomHandler struct {
@@ -65,41 +61,6 @@ func getCategory(category string) int {
 	return 0
 }
 
-//func (h *roomHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
-//	rm := r.Context().Value("room").(*models.Room)
-//	_, err := h.service.GetDevices(rm.DeviceID)
-//	if err != nil {
-//		return
-//	}
-//	h.ViewRoom(w, r, viewRoomProp{room: rm})
-//}
-
-func (h *roomHandler) RoomCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var room *models.Room
-
-		if idStr := chi.URLParam(r, "id"); idStr != "" {
-			id, err := strconv.Atoi(idStr)
-			if err != nil {
-				h.log.Error("can't convert id to int", err)
-				render.Render(w, r, response.ErrInvalidParams) //nolint:errcheck
-				return
-			}
-			room, err = h.service.GetRoom(id)
-			if err != nil {
-				render.Render(w, r, response.ErrNotFound)
-				return
-			}
-		} else {
-			render.Render(w, r, response.ErrNotFound)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), "room", room)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
 func (h *roomHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	name := r.Form.Get("name")
@@ -115,7 +76,7 @@ func (h *roomHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to get rooms", http.StatusInternalServerError)
 		return
 	}
-	h.ViewRooms(w, r, viewRoomsProp{rooms, []*models.Device{}})
+	h.ViewRooms(w, r, viewRoomsProp{rooms, []*models.DeviceWithData{}})
 }
 
 func (h *roomHandler) Rooms(w http.ResponseWriter, r *http.Request) {
@@ -125,12 +86,13 @@ func (h *roomHandler) Rooms(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to get rooms", http.StatusInternalServerError)
 		return
 	}
-	h.ViewRooms(w, r, viewRoomsProp{rooms: rooms, devices: []*models.Device{}})
+	devices, err := h.service.GetDevices()
+	h.ViewRooms(w, r, viewRoomsProp{rooms: rooms, devices: devices})
 }
 
 type viewRoomsProp struct {
 	rooms   []*models.Room
-	devices []*models.Device
+	devices []*models.DeviceWithData
 }
 
 func (h *roomHandler) ViewRooms(w http.ResponseWriter, r *http.Request, props viewRoomsProp) {
