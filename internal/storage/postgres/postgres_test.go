@@ -292,10 +292,10 @@ func TestDevice(t *testing.T) {
 			status = false
 		}
 		device := &models.CreateDevice{
-			RoomID: h.ID,
-			Name:   fmt.Sprintf("device #%d", i),
-			Type:   0,
-			Status: status,
+			RoomID:   h.ID,
+			Name:     fmt.Sprintf("device #%d", i),
+			Category: 0,
+			Status:   status,
 		}
 		err = strg.CreateDevice(context.Background(), device)
 		if err != nil {
@@ -311,7 +311,7 @@ func TestDevice(t *testing.T) {
 			if err != nil {
 				t.Error("can't get device by id", err)
 			}
-			if d.Name != curDevice.Name || d.Type != curDevice.Type || d.Status != curDevice.Status {
+			if d.Name != curDevice.Name || d.Category != curDevice.Category || d.Status != curDevice.Status {
 				t.Error("incorrect devices data in getting by id, and gettinb by hub_id")
 			}
 		}
@@ -322,11 +322,11 @@ func TestDevice(t *testing.T) {
 		if i < len(devicesInDB)-1 {
 			nextDev := devicesInDB[i+1]
 			newDevice := &models.Device{
-				ID:     d.ID,
-				RoomID: nextDev.RoomID,
-				Name:   nextDev.Name,
-				Type:   nextDev.Type,
-				Status: nextDev.Status,
+				ID:       d.ID,
+				RoomID:   nextDev.RoomID,
+				Name:     nextDev.Name,
+				Category: nextDev.Category,
+				Status:   nextDev.Status,
 			}
 			err := strg.UpdateDevice(context.Background(), newDevice)
 			if err != nil {
@@ -342,7 +342,7 @@ func TestDevice(t *testing.T) {
 				t.Error("can't get device by id", err)
 			}
 			nextDev := devicesInDB[i+1]
-			if curDev.Name != nextDev.Name || curDev.Type != nextDev.Type || curDev.Status != nextDev.Status {
+			if curDev.Name != nextDev.Name || curDev.Category != nextDev.Category || curDev.Status != nextDev.Status {
 				t.Error("not updated device info")
 			}
 		}
@@ -394,10 +394,10 @@ func TestDeviceData(t *testing.T) {
 			status = false
 		}
 		device := &models.CreateDevice{
-			RoomID: h.ID,
-			Name:   fmt.Sprintf("device #%d", i),
-			Type:   0,
-			Status: status,
+			RoomID:   h.ID,
+			Name:     fmt.Sprintf("device #%d", i),
+			Category: 0,
+			Status:   status,
 		}
 		err := strg.CreateDevice(context.Background(), device)
 		if err != nil {

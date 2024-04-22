@@ -2,12 +2,12 @@ package main
 
 import (
 	"HestiaHome/internal/config"
-	"HestiaHome/internal/server/handlers"
-	mwLoger "HestiaHome/internal/server/middleware/logger"
+	mqtt_server "HestiaHome/internal/mqtt-server"
+	"HestiaHome/internal/publicapi/handlers"
+	mwLoger "HestiaHome/internal/publicapi/middleware/logger"
 	"HestiaHome/internal/storage/postgres"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
 	"os"
@@ -27,6 +27,10 @@ func main() {
 	log.Info("Start server", slog.String("address", cfg.Server.Address))
 	log.Debug("Debug mode enable")
 
+	go func() {
+		mqtt_server.New()
+	}()
+
 	db, err := postgres.New(log, cfg)
 	if err != nil {
 		log.Error("Can't init storage", err)
@@ -39,7 +43,6 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 	router.Use(mwLoger.New(log))
-	router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	router.Mount("/", handlers.RoomRoutes(log, db, cfg.MQTT))
 

@@ -21,19 +21,18 @@ CREATE TABLE IF NOT EXISTS "rooms"(
 );
 CREATE TABLE IF NOT EXISTS "devices"(
     id SERIAL PRIMARY KEY NOT NULL UNIQUE,
-    room_id SERIAL,
-    FOREIGN KEY (room_id) REFERENCES "rooms"(id),
+    room_id INT,
+    FOREIGN KEY (room_id) REFERENCES "rooms"(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
-    type int NOT NULL,
+    category int NOT NULL,
     status boolean default false,
-    write_topic VARCHAR(255),
-    read_topic VARCHAR(255)
+    hidden boolean default false
 );
 CREATE TABLE IF NOT EXISTS "devices_data"(
     id SERIAL PRIMARY KEY NOT NULL UNIQUE,
-    device_id SERIAL,
+    device_id INT,
     FOREIGN KEY(device_id) REFERENCES "devices"(id),
-    value VARCHAR(255),
+    value JSONB,
     unit VARCHAR(255),
     received_at TIMESTAMP(0) WITH TIME ZONE
 );

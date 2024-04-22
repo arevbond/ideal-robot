@@ -7,12 +7,14 @@ import (
 )
 
 var (
-	ErrUserNotExist = errors.New("user not exist")
+	ErrUserNotExist   = errors.New("user not exist")
+	ErrDeviceNotExist = errors.New("device not exist")
 )
 
 type Storage interface {
 	RoomRepository
 	DeviceRepository
+	DeviceDataRepository
 }
 
 type RoomRepository interface {
@@ -24,7 +26,14 @@ type RoomRepository interface {
 }
 
 type DeviceRepository interface {
-	CreateDevice(ctx context.Context, device *models.CreateDevice) error
+	GetDevicesWithData(ctx context.Context) ([]*models.DeviceWithData, error)
+	GetDevices(ctx context.Context) ([]*models.Device, error)
+	CreateDevice(ctx context.Context, device *models.Device) error
 	GetDeviceByID(ctx context.Context, id int) (*models.Device, error)
 	GetDevicesByRoomID(ctx context.Context, roomID int, offset, limit int) ([]*models.Device, error)
+}
+
+type DeviceDataRepository interface {
+	CreateDeviceData(ctx context.Context, deviceData *models.CreateDeviceData) error
+	GetDeviceDataByID(ctx context.Context, id int) (*models.DeviceData, error)
 }

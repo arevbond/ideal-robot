@@ -1,4 +1,5 @@
 .idea/
+tmp/
 go.mod
 go.sum
 .gitignore
