@@ -14,6 +14,7 @@ type Device struct {
 type DeviceWithData struct {
 	ID         int       `db:"device_id"`
 	Name       string    `db:"device_name"`
+	Category   int       `db:"category"`
 	Value      Value     `db:"value"`
 	Unit       string    `db:"unit"`
 	ReceivedAt time.Time `db:"received_at"`

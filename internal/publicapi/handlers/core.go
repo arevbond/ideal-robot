@@ -31,6 +31,11 @@ func (h *handler) Dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	devices, err := h.service.GetDevices()
+	if err != nil {
+		h.log.Error("failed to increment", slog.Any("error", err))
+		http.Error(w, "failed to get rooms", http.StatusInternalServerError)
+		return
+	}
 	h.viewDashboard(w, r, viewDashboardProp{rooms: rooms, devices: devices})
 }
 

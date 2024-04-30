@@ -1,6 +1,7 @@
 package components
 
 import "HestiaHome/internal/models"
+import "strconv"
 
 templ sidebar() {
     <div class="sidebar">
@@ -59,30 +60,55 @@ templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData) {
 	 <body>
 	 @sidebar()
        <div class="dashboard-content">
-           <div class="block" style="background-color: #ffc107;">
+           <div class="block">
                <h2>Комнаты</h2>
-               for _, room := range rooms {
+               <div class="inner-block-container">
+                   for _, room := range rooms {
                    <div class="inner-block">{ room.Name }</div>
-               }
+                   }
+               </div>
            </div>
-           <div class="block" style="background-color: #03a9f4;">
-               <h2>Датчики</h2>
-                <div class="inner-blocks-container">
-                <div class="inner-block">device1</div>
-                    for _, device := range devices {
-                    <div class="inner-block">device2</div>
-                    }
-                </div>
-           </div>
-           <div class="block" style="background-color: #1CAC78;">
-               <h2>Быстрые действия</h2>
-           </div>
-           <div class="block" style="background-color: #BDECB6;">
+               <div class="block">
+                   <h2>Быстрые действия</h2>
+               </div>
+
+           <div class="block">
                <h2>Напоминания</h2>
            </div>
-       </div>
+               <div class="block">
+                   <h2>Датчики</h2>
+                   <div class="inner-block-container">
+                       for _, device := range devices {
+                          switch device.Category {
+                          case 1:
+                            @temperatureDevice(device)
+                          case 2:
+                            @humidityDevice(device)
+                          default:
+                           <div class="inner-block">
+                           <h3>{ device.Name }</h3>
+                          </div>
+                          }
+                       }
+                   </div>
+               </div>
+        </div>
       </body>
 	</html>
 }
 
+templ temperatureDevice(device *models.DeviceWithData) {
+    <div class="temperature inner-block">
+    <h3> { device.Name }</h3>
+    <img class="icon" src="/static/images/temperature.svg" alt=""/>
+    <p> Температура: {strconv.FormatFloat(device.Value.Value, 'f', 2, 64)}°</p>
+    </div>
+}
 
+templ humidityDevice(device *models.DeviceWithData) {
+    <div class="temperature inner-block">
+    <h3> { device.Name }</h3>
+    <img class="icon" src="/static/images/humidity.svg" alt=""/>
+    <p> Влажность: {strconv.FormatFloat(device.Value.Value, 'f', 0, 64)}% </p>
+    </div>
+}

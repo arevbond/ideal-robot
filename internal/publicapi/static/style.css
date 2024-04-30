@@ -1,8 +1,9 @@
-body {
+html, body {
+    height: 100%;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background-color: #341d08;
 }
 
 /* START SIDEBAR */
@@ -57,43 +58,43 @@ body {
     height: auto; /* Автоматический подбор высоты, чтобы сохранить пропорции */
 }
 
-.content {
-    margin-left: 220px; /* Отступ для боковой панели */
-    padding: 20px;
-}
 /* END SIDEBAR */
 
 /* START DASHBOARD */
 .dashboard-content {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    flex-wrap: wrap; /* Добавлено */
     padding: 20px;
+    margin-left: 200px;
+    height: 92%;
 }
 
 .block {
-    width: calc(100% - 250px); /* Вычитаем ширину сайдбара */
-    min-height: 250px; /* Изменено на min-height для устойчивости блока */
-    background-color: #fff;
-    margin-bottom: 20px;
-    margin-left: 250px; /* Ширина сайдбара */
+    background-color: #f2dfd3;
+    max-height: 30%;
+    margin-bottom: 15px;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column; /* Располагаем элементы в строку */
-    justify-content: flex-start; /* Выравниваем элементы слева */
-    align-items: flex-start; /* Выравниваем элементы по вертикали */
-    flex-wrap: wrap;
+    overflow: hidden;
 }
 
-.inner-blocks-container {
-    display: flex;
-    flex-direction: row; /* Внутренние блоки будут располагаться в строку */
-    flex-wrap: wrap; /* Разрешаем перенос элементов на новую строку */
-    align-items: flex-start; /* Выравниваем элементы по верхнему краю */
+.block:last-child {
+    margin-bottom: 0;
+}
+
+.block:nth-child(1),
+.block:nth-child(4) {
+    flex-grow: 1;
+    flex-basis: calc(100% - 40px); /* 100% ширины минус два отступа по 20px */
+}
+
+.block:nth-child(2),
+.block:nth-child(3) {
+    flex-grow: 0;
+    flex-basis: calc(45% - 20px); /* Половина ширины минус отступ */
+    margin-left: 15px;
 }
 
 .block:hover {
@@ -104,24 +105,45 @@ body {
 .block h2 {
     font-size: 20px;
     color: #333;
-    margin-right: 15px; /* Добавляем отступ справа */
-    border-bottom: 1px solid #ddd;
+    margin-right: 15px;
+    border-bottom: 1px solid #341d08;
     padding-bottom: 10px;
-    align-self: flex-start; /* Выравниваем заголовок слева */
+    align-self: flex-start;
+    margin-top: 0;
+}
+
+.inner-block-container {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
 }
 
 .inner-block {
-    width: 130px; /* Ширина изменена на auto, чтобы блоки занимали ширину содержимого */
-    height: 130px; /* Высота изменена на 100px для примера */
-    background-color: #999;
-    margin-left: 15px; /* Добавляем отступ между блоками */
-    display: flex; /* Используем flex для расположения блоков в ряд */
-    align-items: center; /* Выравниваем блоки по вертикали */
-    justify-content: center; /* Выравниваем блоки по горизонтали */
-    text-align: center; /* Выравниваем текст по центру внутри блока */
-    margin-top: 10px; /* Добавляем отступ между заголовком и блоками */
+    flex: 0 0 calc(20% - 30px); /* Пропорциональная ширина */
+    height: 65%;
+    background-color: #d3a27f;
+    margin: 10px; /* Уменьшен отступ между блоками */
+    display: flex;
+    align-items: center;
+    justify-content: space-around; /* Изменено на space-around для равномерного распределения элементов */
+    flex-direction: column; /* Изменено на column для вертикального расположения элементов */
+    text-align: center;
     border-radius: 20px;
+    transition: background-color 0.3s;
 }
 
+.inner-block .icon {
+    width: 25px; /* Изменена ширина логотипа */
+    height: auto; /* Автоматическая высота */
+}
 
+.inner-block h3, .inner-block p {
+    margin: 5px; /* Уменьшен отступ текста от краев блока */
+}
+
+.inner-block:hover{
+    background-color: #7c3f06;
+    /*transform: translateY(-5px);*/
+    /*box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);*/
+}
 /* END DASHBOARD */

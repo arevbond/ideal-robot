@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Storage) GetDevicesWithData(ctx context.Context) ([]*models.DeviceWithData, error) {
-	q := `SELECT d.id AS device_id, d.name AS device_name, dd.value, dd.unit, dd.received_at
+	q := `SELECT d.id AS device_id, d.name AS device_name, d.category as category, dd.value, dd.unit, dd.received_at
 		FROM devices d
 		JOIN (
 			SELECT device_id, MAX(received_at) AS max_received_at
@@ -122,6 +122,7 @@ func (s *Storage) DeleteDevice(ctx context.Context, id int) error {
 type DeviceWithDataEntity struct {
 	ID         int       `db:"device_id"`
 	Name       string    `db:"device_name"`
+	Category   int       `db:"category"`
 	Value      []byte    `db:"value"`
 	Unit       string    `db:"unit"`
 	ReceivedAt time.Time `db:"received_at"`
@@ -136,6 +137,7 @@ func (d *DeviceWithDataEntity) convertToModel() (*models.DeviceWithData, error) 
 	return &models.DeviceWithData{
 		ID:         d.ID,
 		Name:       d.Name,
+		Category:   d.Category,
 		Value:      value,
 		Unit:       d.Unit,
 		ReceivedAt: d.ReceivedAt,
