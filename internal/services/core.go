@@ -49,23 +49,6 @@ func (s *Service) GetRoom(id int) (*models.Room, error) {
 	return room, err
 }
 
-//func (s *Service) CreateDevice(roomID int, name, writeTopic, readTopic string, category int) error {
-//	err := s.db.CreateDevice(context.Background(), &models.CreateDevice{
-//		RoomID:     roomID,
-//		DeviceName:       name,
-//		Category:   category,
-//		WriteTopic: writeTopic,
-//		ReadTopic:  readTopic,
-//	})
-//	if err != nil {
-//		return e.Wrap("can't create device", err)
-//	}
-//
-//	mqtt.Subscribe(readTopic, s.mqttClient)
-//
-//	return nil
-//}
-
 func (s *Service) GetDevices() ([]*models.DeviceWithData, error) {
 	devices, err := s.db.GetDevicesWithData(context.Background())
 	if err != nil {

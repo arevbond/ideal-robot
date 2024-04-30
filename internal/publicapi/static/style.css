@@ -1,0 +1,114 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+/* START SIDEBAR */
+.sidebar {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #272222;
+    padding-top: 20px;
+}
+
+.icon {
+    /*width: 20px; !* Задайте нужную ширину иконки *!*/
+    height: 20px; /* Задайте нужную высоту иконки */
+    margin-right: 10px; /* Отступ справа от иконки, чтобы оставить место для текста */
+    /*background-color: white;*/
+}
+
+.tab {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    padding: 10px 20px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s;
+}
+.tab:hover {
+    background-color: #555;
+}
+.logout {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px 20px;
+    position: absolute;
+    bottom: 20px;
+    width: 80%;
+    text-align: center;
+    background-color: #555;
+    transition: background-color 0.3s;
+}
+.logout:hover {
+    background-color: #777;
+}
+
+.logo {
+    display: block; /* Обязательно делаем изображение блочным элементом */
+    margin: 20px auto; /* Центрируем изображение по горизонтали с отступом сверху 20px */
+    width: 150px; /* Устанавливаем ширину изображения */
+    height: auto; /* Автоматический подбор высоты, чтобы сохранить пропорции */
+}
+
+.content {
+    margin-left: 220px; /* Отступ для боковой панели */
+    padding: 20px;
+}
+/* END SIDEBAR */
+
+/* START DASHBOARD */
+.dashboard-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.block {
+    width: calc(100% - 250px); /* Вычитаем ширину сайдбара */
+    height: 250px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    margin-left: 250px; /* Ширина сайдбара */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column; /* Располагаем элементы в столбец */
+    justify-content: flex-start; /* Выравниваем элементы сверху */
+    align-items: flex-start; /* Выравниваем элементы слева */
+}
+
+.block:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.block h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    align-self: flex-start; /* Выравниваем заголовок слева */
+}
+
+.inner-block {
+    width: 100px;
+    height: 100px;
+    background-color: #999;
+    margin: 5px;
+    display: inline-block;
+    text-align: center;
+}
+
+/* END DASHBOARD */
