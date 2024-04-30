@@ -53,7 +53,7 @@ body {
 .logo {
     display: block; /* Обязательно делаем изображение блочным элементом */
     margin: 20px auto; /* Центрируем изображение по горизонтали с отступом сверху 20px */
-    width: 150px; /* Устанавливаем ширину изображения */
+    width: 120px; /* Устанавливаем ширину изображения */
     height: auto; /* Автоматический подбор высоты, чтобы сохранить пропорции */
 }
 
@@ -74,7 +74,7 @@ body {
 
 .block {
     width: calc(100% - 250px); /* Вычитаем ширину сайдбара */
-    height: 250px;
+    min-height: 250px; /* Изменено на min-height для устойчивости блока */
     background-color: #fff;
     margin-bottom: 20px;
     margin-left: 250px; /* Ширина сайдбара */
@@ -83,9 +83,17 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     display: flex;
-    flex-direction: column; /* Располагаем элементы в столбец */
-    justify-content: flex-start; /* Выравниваем элементы сверху */
-    align-items: flex-start; /* Выравниваем элементы слева */
+    flex-direction: column; /* Располагаем элементы в строку */
+    justify-content: flex-start; /* Выравниваем элементы слева */
+    align-items: flex-start; /* Выравниваем элементы по вертикали */
+    flex-wrap: wrap;
+}
+
+.inner-blocks-container {
+    display: flex;
+    flex-direction: row; /* Внутренние блоки будут располагаться в строку */
+    flex-wrap: wrap; /* Разрешаем перенос элементов на новую строку */
+    align-items: flex-start; /* Выравниваем элементы по верхнему краю */
 }
 
 .block:hover {
@@ -96,19 +104,24 @@ body {
 .block h2 {
     font-size: 20px;
     color: #333;
-    margin-bottom: 15px;
+    margin-right: 15px; /* Добавляем отступ справа */
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
     align-self: flex-start; /* Выравниваем заголовок слева */
 }
 
 .inner-block {
-    width: 100px;
-    height: 100px;
+    width: 130px; /* Ширина изменена на auto, чтобы блоки занимали ширину содержимого */
+    height: 130px; /* Высота изменена на 100px для примера */
     background-color: #999;
-    margin: 5px;
-    display: inline-block;
-    text-align: center;
+    margin-left: 15px; /* Добавляем отступ между блоками */
+    display: flex; /* Используем flex для расположения блоков в ряд */
+    align-items: center; /* Выравниваем блоки по вертикали */
+    justify-content: center; /* Выравниваем блоки по горизонтали */
+    text-align: center; /* Выравниваем текст по центру внутри блока */
+    margin-top: 10px; /* Добавляем отступ между заголовком и блоками */
+    border-radius: 20px;
 }
+
 
 /* END DASHBOARD */

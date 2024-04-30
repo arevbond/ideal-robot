@@ -4,8 +4,8 @@ import "HestiaHome/internal/models"
 
 templ sidebar() {
     <div class="sidebar">
-        <a href="#dashboard"><img class="logo" src="/static/images/logo.svg" alt=""/></a>
-        <a href="#dashboard" class="tab">
+        <a href="/"><img class="logo" src="/static/images/logo.svg" alt=""/></a>
+        <a href="/" class="tab">
             <img class="icon" src="/static/images/profile_icon.svg" alt=""/>
             Профиль
         </a>
@@ -13,7 +13,7 @@ templ sidebar() {
             <img class="icon" src="/static/images/notification.svg" alt=""/>
             Уведомления
         </a>
-        <a href="#dashboard" class="tab">
+        <a href="/" class="tab">
             <img class="icon" src="/static/images/dashboard.svg" alt=""/>
             Панель
         </a>
@@ -67,9 +67,12 @@ templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData) {
            </div>
            <div class="block" style="background-color: #03a9f4;">
                <h2>Датчики</h2>
+                <div class="inner-blocks-container">
+                <div class="inner-block">device1</div>
                     for _, device := range devices {
-                        <div class="inner-block">{ device.Name }</div>
+                    <div class="inner-block">device2</div>
                     }
+                </div>
            </div>
            <div class="block" style="background-color: #1CAC78;">
                <h2>Быстрые действия</h2>

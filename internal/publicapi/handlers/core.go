@@ -20,12 +20,6 @@ func Routes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Rou
 	r := chi.NewRouter()
 	roomHandler := &handler{services.New(log, db, cfg), log}
 	r.Get("/", roomHandler.Dashboard)
-	//r.Post("/", roomHandler.CreateRoom)
-	//r.Route("/{id}", func(r chi.Router) {
-	//	r.Use(handler.RoomCtx)
-	//	r.Get("/", handler.GetRoom)
-	//	r.Post("/device", handler.CreateDevice)
-	//})
 	return r
 }
 

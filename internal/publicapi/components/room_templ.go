@@ -25,7 +25,7 @@ func sidebar() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"sidebar\"><a href=\"#dashboard\"><img class=\"logo\" src=\"/static/images/logo.svg\" alt=\"\"></a> <a href=\"#dashboard\" class=\"tab\"><img class=\"icon\" src=\"/static/images/profile_icon.svg\" alt=\"\"> Профиль</a> <a href=\"#notifications\" class=\"tab\"><img class=\"icon\" src=\"/static/images/notification.svg\" alt=\"\"> Уведомления</a> <a href=\"#dashboard\" class=\"tab\"><img class=\"icon\" src=\"/static/images/dashboard.svg\" alt=\"\"> Панель</a> <a href=\"#rooms\" class=\"tab\"><img class=\"icon\" src=\"/static/images/rooms.svg\" alt=\"\"> Комнаты</a> <a href=\"#sensors\" class=\"tab\"><img class=\"icon\" src=\"/static/images/devices.svg\" alt=\"\"> Датчики</a> <a href=\"#reminders\" class=\"tab\"><img class=\"icon\" src=\"/static/images/todo.svg\" alt=\"\"> ToDo</a> <a href=\"#schedule\" class=\"tab\"><img class=\"icon\" src=\"/static/images/time.svg\" alt=\"\"> Расписание</a> <a href=\"#automation\" class=\"tab\"><img class=\"icon\" src=\"/static/images/automation.svg\" alt=\"\"> Автоматизация</a> <a href=\"#settings\" class=\"tab\"><img class=\"icon\" src=\"/static/images/settings.svg\" alt=\"\"> Настройки</a> <a href=\"#logout\" class=\"logout\">Выход</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"sidebar\"><a href=\"/\"><img class=\"logo\" src=\"/static/images/logo.svg\" alt=\"\"></a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/profile_icon.svg\" alt=\"\"> Профиль</a> <a href=\"#notifications\" class=\"tab\"><img class=\"icon\" src=\"/static/images/notification.svg\" alt=\"\"> Уведомления</a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/dashboard.svg\" alt=\"\"> Панель</a> <a href=\"#rooms\" class=\"tab\"><img class=\"icon\" src=\"/static/images/rooms.svg\" alt=\"\"> Комнаты</a> <a href=\"#sensors\" class=\"tab\"><img class=\"icon\" src=\"/static/images/devices.svg\" alt=\"\"> Датчики</a> <a href=\"#reminders\" class=\"tab\"><img class=\"icon\" src=\"/static/images/todo.svg\" alt=\"\"> ToDo</a> <a href=\"#schedule\" class=\"tab\"><img class=\"icon\" src=\"/static/images/time.svg\" alt=\"\"> Расписание</a> <a href=\"#automation\" class=\"tab\"><img class=\"icon\" src=\"/static/images/automation.svg\" alt=\"\"> Автоматизация</a> <a href=\"#settings\" class=\"tab\"><img class=\"icon\" src=\"/static/images/settings.svg\" alt=\"\"> Настройки</a> <a href=\"#logout\" class=\"logout\">Выход</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -80,30 +80,17 @@ func Dashboard(rooms []*models.Room, devices []*models.DeviceWithData) templ.Com
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"block\" style=\"background-color: #03a9f4;\"><h2>Датчики</h2>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"block\" style=\"background-color: #03a9f4;\"><h2>Датчики</h2><div class=\"inner-blocks-container\"><div class=\"inner-block\">device1</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, device := range devices {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"inner-block\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(device.Name)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/room.templ`, Line: 71, Col: 62}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"inner-block\">device2</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"block\" style=\"background-color: #1CAC78;\"><h2>Быстрые действия</h2></div><div class=\"block\" style=\"background-color: #BDECB6;\"><h2>Напоминания</h2></div></div></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"block\" style=\"background-color: #1CAC78;\"><h2>Быстрые действия</h2></div><div class=\"block\" style=\"background-color: #BDECB6;\"><h2>Напоминания</h2></div></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
