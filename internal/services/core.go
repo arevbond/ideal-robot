@@ -49,6 +49,14 @@ func (s *Service) GetRoom(id int) (*models.Room, error) {
 	return room, err
 }
 
+func (s *Service) GetDevicesByRoomID(id int) ([]*models.DeviceWithData, error) {
+	devices, err := s.db.GetDevicesWithDataByID(context.Background(), id)
+	if err != nil {
+		return nil, e.Wrap("service can't get devices by room id", err)
+	}
+	return devices, nil
+}
+
 func (s *Service) GetDevices() ([]*models.DeviceWithData, error) {
 	devices, err := s.db.GetDevicesWithData(context.Background())
 	if err != nil {

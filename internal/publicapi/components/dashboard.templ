@@ -2,6 +2,7 @@ package components
 
 import "HestiaHome/internal/models"
 import "strconv"
+import "fmt"
 
 templ sidebar() {
     <div class="sidebar">
@@ -42,7 +43,27 @@ templ sidebar() {
             <img class="icon" src="/static/images/settings.svg" alt=""/>
             Настройки
         </a>
-        <a href="#logout" class="logout">Выход</a>
+       // <a href="#logout" class="logout">Выход</a>
+    </div>
+}
+
+templ DashboardDevices(devices []*models.DeviceWithData) {
+    <div class="block" id="devices">
+        <h2>Датчики</h2>
+        <div class="inner-block-container">
+            for _, device := range devices {
+               switch device.Category {
+               case 1:
+                 @temperatureDevice(device)
+               case 2:
+                 @humidityDevice(device)
+               default:
+                <div class="inner-block">
+                <h3>{ device.Name }</h3>
+               </div>
+               }
+            }
+        </div>
     </div>
 }
 
@@ -54,54 +75,46 @@ templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData) {
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
         <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
         <title>Rooms</title>
-        <script src="/static/assets/js/htmx.min.js"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="/static/style.css" media="screen"/>
 	</head>
 	 <body>
 	 @sidebar()
        <div class="dashboard-content">
-           <div class="block">
+          <div class="block">
                <h2>Комнаты</h2>
                <div class="inner-block-container">
                    for _, room := range rooms {
-                   <div class="inner-block">{ room.Name }</div>
+                   <div class="cursor inner-block" hx-trigger="click" hx-target="#devices" hx-swap="outerHTML"
+                         hx-get={string(templ.URL(fmt.Sprintf("/%d", room.ID)))}>
+                        <h3>{ room.Name }</h3>
+
+                         <img hx-trigger="click" hx-target="closest .inner-block" hx-swap="outerHTML"
+                          hx-delete={string(templ.URL(fmt.Sprintf("/room/%d", room.ID)))}
+                         class="icon cursor" src="/static/images/delete.svg" alt=""/>
+                    </div>
                    }
                </div>
            </div>
                <div class="block">
-                   <h2>Быстрые действия</h2>
+                   <h2>Журнал событий</h2>
                </div>
 
            <div class="block">
                <h2>Напоминания</h2>
            </div>
-               <div class="block">
-                   <h2>Датчики</h2>
-                   <div class="inner-block-container">
-                       for _, device := range devices {
-                          switch device.Category {
-                          case 1:
-                            @temperatureDevice(device)
-                          case 2:
-                            @humidityDevice(device)
-                          default:
-                           <div class="inner-block">
-                           <h3>{ device.Name }</h3>
-                          </div>
-                          }
-                       }
-                   </div>
-               </div>
+              @DashboardDevices(devices)
         </div>
       </body>
 	</html>
+
 }
 
 templ temperatureDevice(device *models.DeviceWithData) {
     <div class="temperature inner-block">
     <h3> { device.Name }</h3>
     <img class="icon" src="/static/images/temperature.svg" alt=""/>
-    <p> Температура: {strconv.FormatFloat(device.Value.Value, 'f', 2, 64)}°</p>
+    <p> Температура: {strconv.FormatFloat(device.Value.Value, 'f', 1, 64)}°C</p>
     </div>
 }
 

@@ -27,6 +27,7 @@ type RoomRepository interface {
 
 type DeviceRepository interface {
 	GetDevicesWithData(ctx context.Context) ([]*models.DeviceWithData, error)
+	GetDevicesWithDataByID(ctx context.Context, id int) ([]*models.DeviceWithData, error)
 	GetDevices(ctx context.Context) ([]*models.Device, error)
 	CreateDevice(ctx context.Context, device *models.Device) error
 	GetDeviceByID(ctx context.Context, id int) (*models.Device, error)

@@ -37,7 +37,37 @@ func (s *Storage) GetDevicesWithData(ctx context.Context) ([]*models.DeviceWithD
 			result = append(result, device)
 		}
 	}
+	return result, nil
+}
 
+func (s *Storage) GetDevicesWithDataByID(ctx context.Context, id int) ([]*models.DeviceWithData, error) {
+	q := `SELECT d.id AS device_id, d.name AS device_name, d.category as category, dd.value, dd.unit, dd.received_at
+		FROM devices d
+		JOIN (
+			SELECT device_id, MAX(received_at) AS max_received_at
+			FROM devices_data
+			GROUP BY device_id
+		) max_dd ON d.id = max_dd.device_id
+		JOIN devices_data dd ON d.id = dd.device_id AND max_dd.max_received_at = dd.received_at
+		WHERE d.room_id = $1;
+`
+	devices := []*DeviceWithDataEntity{}
+	err := s.db.SelectContext(ctx, &devices, q, id)
+	if err != nil {
+		s.log.Error("can't get devices with data", "error", err)
+		return nil, e.Wrap("can't get devices with data", err)
+	}
+
+	result := []*models.DeviceWithData{}
+	for _, deviceFromDB := range devices {
+		device, err := deviceFromDB.convertToModel()
+		if err != nil {
+			s.log.Error("can't convert db entity to model", "error", err)
+			continue
+		} else {
+			result = append(result, device)
+		}
+	}
 	return result, nil
 }
 
