@@ -15,6 +15,8 @@ type Storage interface {
 	RoomRepository
 	DeviceRepository
 	DeviceDataRepository
+	HistoryRepository
+	ReminderRepository
 }
 
 type RoomRepository interface {
@@ -37,4 +39,16 @@ type DeviceRepository interface {
 type DeviceDataRepository interface {
 	CreateDeviceData(ctx context.Context, deviceData *models.CreateDeviceData) error
 	GetDeviceDataByID(ctx context.Context, id int) (*models.DeviceData, error)
+}
+
+type HistoryRepository interface {
+	GetHistories(ctx context.Context, limit int) ([]*models.History, error)
+	CreateHistory(ctx context.Context, history *models.CreateHistory) error
+	UpdateHistory(ctx context.Context, history *models.History) error
+	DeleteHistory(ctx context.Context, id int) error
+}
+
+type ReminderRepository interface {
+	GetReminders(ctx context.Context, limit int) ([]*models.Reminder, error)
+	CreateReminder(ctx context.Context, reminder *models.CreateReminder) error
 }

@@ -20,8 +20,9 @@ type Service struct {
 func New(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) *Service {
 	client := mqtt.New(cfg.Address, cfg.Port, cfg.ClientID, cfg.Username, cfg.Password)
 	mqtt.Subscribe("topic/test", client)
-	go processData(log, db)
-	return &Service{log: log, db: db, mqttClient: client}
+	s := &Service{log: log, db: db, mqttClient: client}
+	go processData(log, db, s)
+	return s
 }
 
 func (s *Service) Rooms() ([]*models.Room, error) {

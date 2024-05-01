@@ -67,47 +67,63 @@ templ DashboardDevices(devices []*models.DeviceWithData) {
     </div>
 }
 
-templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData) {
-	<!doctype html>
-	<html lang="en">
-	<head>
+templ dashboardRooms(rooms []*models.Room) {
+    <div class="block">
+        <h2>Комнаты</h2>
+        <div class="inner-block-container">
+        for _, room := range rooms {
+        <div class="cursor inner-block" hx-trigger="click" hx-target="#devices" hx-swap="outerHTML"
+        hx-get={string(templ.URL(fmt.Sprintf("/%d", room.ID)))}>
+        <h3>{ room.Name }</h3>
+
+        <img hx-trigger="click" hx-target="closest .inner-block" hx-swap="outerHTML"
+        hx-delete={string(templ.URL(fmt.Sprintf("/room/%d", room.ID)))}
+        class="icon cursor" src="/static/images/delete.svg" alt=""/>
+        </div>
+        }
+        </div>
+    </div>
+
+}
+
+templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, histories []*models.History, reminders []*models.Reminder) {
+    <!doctype html>
+    <html lang="en">
+    <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
         <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
         <title>Rooms</title>
         <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="/static/style.css" media="screen"/>
-	</head>
-	 <body>
-	 @sidebar()
-       <div class="dashboard-content">
-          <div class="block">
-               <h2>Комнаты</h2>
-               <div class="inner-block-container">
-                   for _, room := range rooms {
-                   <div class="cursor inner-block" hx-trigger="click" hx-target="#devices" hx-swap="outerHTML"
-                         hx-get={string(templ.URL(fmt.Sprintf("/%d", room.ID)))}>
-                        <h3>{ room.Name }</h3>
+    </head>
+    <body>
+    @sidebar()
+    <div class="dashboard-content">
 
-                         <img hx-trigger="click" hx-target="closest .inner-block" hx-swap="outerHTML"
-                          hx-delete={string(templ.URL(fmt.Sprintf("/room/%d", room.ID)))}
-                         class="icon cursor" src="/static/images/delete.svg" alt=""/>
-                    </div>
-                   }
-               </div>
-           </div>
-               <div class="block">
-                   <h2>Журнал событий</h2>
-               </div>
+    @dashboardRooms(rooms)
 
-           <div class="block">
-               <h2>Напоминания</h2>
-           </div>
-              @DashboardDevices(devices)
-        </div>
-      </body>
-	</html>
+    @History(histories)
 
+    @DashboardReminders(reminders)
+
+    @DashboardDevices(devices)
+
+    </div>
+    </body>
+    </html>
+
+}
+
+templ DashboardReminders(reminders []*models.Reminder) {
+    <div class="block">
+        <h2>Напоминания</h2>
+        <ul>
+        for _, r := range reminders {
+        <li>{ r.Text }</li>
+        }
+        </ul>
+    </div>
 }
 
 templ temperatureDevice(device *models.DeviceWithData) {
@@ -115,6 +131,17 @@ templ temperatureDevice(device *models.DeviceWithData) {
     <h3> { device.Name }</h3>
     <img class="icon" src="/static/images/temperature.svg" alt=""/>
     <p> Температура: {strconv.FormatFloat(device.Value.Value, 'f', 1, 64)}°C</p>
+    </div>
+}
+
+templ History(histories []*models.History) {
+    <div hx-trigger="click" hx-get="/history" hx-target="this" hx-swap="outerHTML" class="block">
+      <h2>Журнал событий</h2>
+      <ul>
+        for _, h := range histories {
+        <li><span class="date">{ h.CreatedAt.Format("02-01-2006 15:04") }</span>: { h.Text }</li>
+        }
+      </ul>
     </div>
 }
 

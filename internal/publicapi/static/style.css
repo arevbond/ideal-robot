@@ -71,6 +71,19 @@ a {
 /* END SIDEBAR */
 
 /* START DASHBOARD */
+ul {
+    list-style-type: none; /* Убираем маркеры списка */
+    padding: 0; /* Убираем внутренние отступы у списка */
+}
+li {
+    margin-bottom: 10px;
+}
+
+.date {
+    font-weight: bold; /* Жирный текст для даты */
+    color: black; /* Цвет текста для даты */
+}
+
 .dashboard-content {
     display: flex;
     flex-wrap: wrap; /* Добавлено */

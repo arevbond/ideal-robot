@@ -22,6 +22,7 @@ func Routes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Rou
 	h := &handler{services.New(log, db, cfg), log}
 	r.Get("/{roomID}", h.Dashboard)
 	r.Get("/", h.Dashboard)
+	r.Get("/history", h.GetHistories)
 
 	r.Route("/room/{id}", func(r chi.Router) {
 		r.Delete("/", h.DeleteRoom)
@@ -29,16 +30,22 @@ func Routes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Rou
 	return r
 }
 
+func (h *handler) GetHistories(w http.ResponseWriter, r *http.Request) {
+	histories, err := h.service.GetHistories(5)
+	if err != nil {
+		h.log.Error("failed to get histories", slog.Any("error", err))
+		http.Error(w, "failed to get histories", http.StatusInternalServerError)
+		return
+	}
+
+	h.viewHistory(w, r, histories)
+}
+
 func (h *handler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	if strID := chi.URLParam(r, "roomID"); strID != "" {
 		id, err := strconv.Atoi(strID)
 		if err != nil {
 			http.Error(w, "Invalid ID", http.StatusBadRequest)
-			return
-		}
-		room, err := h.service.GetRoom(id)
-		if err != nil {
-			http.Error(w, "can't get room", http.StatusBadRequest)
 			return
 		}
 
@@ -49,35 +56,56 @@ func (h *handler) Dashboard(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.viewDevicesInDashboard(w, r, viewDashboardProp{rooms: []*models.Room{room}, devices: devices})
+		h.viewDevicesInDashboard(w, r, viewDashboardProp{devices: devices})
 		return
 	}
 
 	rooms, err := h.service.Rooms()
 	if err != nil {
-		h.log.Error("failed to increment", slog.Any("error", err))
+		h.log.Error("failed to get rooms", slog.Any("error", err))
 		http.Error(w, "failed to get rooms", http.StatusInternalServerError)
 		return
 	}
 	devices, err := h.service.GetDevices()
 	if err != nil {
-		h.log.Error("failed to increment", slog.Any("error", err))
-		http.Error(w, "failed to get rooms", http.StatusInternalServerError)
+		h.log.Error("failed to get devices", slog.Any("error", err))
+		http.Error(w, "failed to get devices", http.StatusInternalServerError)
 		return
 	}
 
-	h.viewDashboard(w, r, viewDashboardProp{rooms: rooms, devices: devices})
+	histories, err := h.service.GetHistories(5)
+	if err != nil {
+		h.log.Error("failed to get histories", slog.Any("error", err))
+		http.Error(w, "failed to get histories", http.StatusInternalServerError)
+		return
+	}
+
+	reminders, err := h.service.GetReminders(5)
+	if err != nil {
+		h.log.Error("failed to get reminders", slog.Any("error", err))
+		http.Error(w, "failed to get reminders", http.StatusInternalServerError)
+		return
+	}
+
+	h.viewDashboard(w, r, viewDashboardProp{rooms: rooms, devices: devices,
+		histories: histories, reminders: reminders})
 }
 
 type viewDashboardProp struct {
-	rooms   []*models.Room
-	devices []*models.DeviceWithData
+	rooms     []*models.Room
+	devices   []*models.DeviceWithData
+	histories []*models.History
+	reminders []*models.Reminder
 }
 
 func (h *handler) viewDashboard(w http.ResponseWriter, r *http.Request, props viewDashboardProp) {
-	components.Dashboard(props.rooms, props.devices).Render(r.Context(), w)
+	components.Dashboard(props.rooms, props.devices, props.histories, props.reminders).Render(r.Context(), w)
 }
 
 func (h *handler) viewDevicesInDashboard(w http.ResponseWriter, r *http.Request, props viewDashboardProp) {
 	components.DashboardDevices(props.devices).Render(r.Context(), w)
+}
+
+func (h *handler) viewHistory(w http.ResponseWriter, r *http.Request, histories []*models.History) {
+	components.History(histories).Render(r.Context(), w)
 }

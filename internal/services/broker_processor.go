@@ -6,16 +6,17 @@ import (
 	"HestiaHome/internal/storage"
 	"HestiaHome/internal/utils/e"
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 )
 
-func processData(log *slog.Logger, db storage.Storage) {
+func processData(log *slog.Logger, db storage.Storage, s *Service) {
 	for {
 		data := <-mqtt.DevicesData
 		createDeviceData := extractDataByCategory(data)
 		log.Info("receive data from broker", slog.Any("data", data))
-		err := writeDataInStorage(log, db, data, createDeviceData)
+		err := writeDataInStorage(s, log, db, data, createDeviceData)
 		if err != nil {
 			log.Error("can't write data in storage", slog.Any("error", err))
 		}
@@ -23,7 +24,7 @@ func processData(log *slog.Logger, db storage.Storage) {
 	}
 }
 
-func writeDataInStorage(log *slog.Logger, db storage.Storage, deviceData *mqtt.DeviceData, createDeviceData *models.CreateDeviceData) error {
+func writeDataInStorage(s *Service, log *slog.Logger, db storage.Storage, deviceData *mqtt.DeviceData, createDeviceData *models.CreateDeviceData) error {
 	_, err := db.GetDeviceByID(context.Background(), createDeviceData.DeviceID)
 	if err == storage.ErrDeviceNotExist {
 		err = db.CreateDevice(context.Background(), &models.Device{
@@ -34,6 +35,10 @@ func writeDataInStorage(log *slog.Logger, db storage.Storage, deviceData *mqtt.D
 		})
 		if err != nil {
 			return e.Wrap("can't create device in storage", err)
+		}
+		err = s.CreateHistory(fmt.Sprintf(msgEventCreateDevice, deviceData.DeviceName))
+		if err != nil {
+			log.Error("can't create history", slog.Any("error", err))
 		}
 	} else if err != nil {
 		return e.Wrap("can't get device by id", err)
