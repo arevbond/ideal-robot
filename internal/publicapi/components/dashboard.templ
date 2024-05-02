@@ -1,0 +1,183 @@
+package components
+
+import "HestiaHome/internal/models"
+import "strconv"
+import "fmt"
+
+templ sidebar() {
+    <div class="sidebar">
+        <a href="/"><img class="logo" src="/static/images/logo.svg" alt=""/></a>
+        <a href="/" class="tab">
+            <img class="icon" src="/static/images/profile_icon.svg" alt=""/>
+            Профиль
+        </a>
+        <a href="#notifications" class="tab">
+            <img class="icon" src="/static/images/notification.svg" alt=""/>
+            Уведомления
+        </a>
+        <a href="/" class="tab">
+            <img class="icon" src="/static/images/dashboard.svg" alt=""/>
+            Панель
+        </a>
+        <a href="#rooms" class="tab">
+            <img class="icon" src="/static/images/rooms.svg" alt=""/>
+            Комнаты
+        </a>
+        <a href="#sensors" class="tab">
+            <img class="icon" src="/static/images/devices.svg" alt=""/>
+            Датчики
+        </a>
+        <a href="#reminders" class="tab">
+            <img class="icon" src="/static/images/todo.svg" alt=""/>
+            ToDo
+        </a>
+        <a href="#schedule" class="tab">
+            <img class="icon" src="/static/images/time.svg" alt=""/>
+            Расписание
+        </a>
+        <a href="#automation" class="tab">
+            <img class="icon" src="/static/images/automation.svg" alt=""/>
+            Автоматизация
+        </a>
+        <a href="#settings" class="tab">
+            <img class="icon" src="/static/images/settings.svg" alt=""/>
+            Настройки
+        </a>
+       // <a href="#logout" class="logout">Выход</a>
+    </div>
+}
+
+templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, histories []*models.History, reminders []*models.Reminder) {
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+        <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+        <title>Rooms</title>
+        <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="/static/style.css" media="screen"/>
+    </head>
+    <body>
+    @sidebar()
+    <div class="dashboard-content">
+
+    @dashboardRooms(rooms)
+
+    @History(histories)
+
+    @DashboardReminders(reminders)
+
+    @DashboardDevices(devices)
+
+    </div>
+    </body>
+    </html>
+
+}
+
+templ dashboardRooms(rooms []*models.Room) {
+    <div class="block">
+        <h2>Комнаты</h2>
+        <div class="inner-block-container">
+        for _, room := range rooms {
+        <div class="cursor inner-block" hx-trigger="click" hx-target="#devices" hx-swap="outerHTML"
+        hx-get={string(templ.URL(fmt.Sprintf("/%d", room.ID)))}>
+        <h3>{ room.Name }</h3>
+
+        <img hx-trigger="click" hx-target="closest .inner-block" hx-swap="outerHTML"
+        hx-confirm={fmt.Sprintf("Вы уверены, что хотите удалить комнату %s?", room.Name)}
+        hx-delete={string(templ.URL(fmt.Sprintf("/room/%d", room.ID)))}
+        class="icon cursor" src="/static/images/delete.svg" alt=""/>
+        </div>
+        }
+        </div>
+    </div>
+
+}
+
+templ DashboardReminders(reminders []*models.Reminder) {
+    <div class="block">
+        <h2>Напоминания</h2>
+        <ul>
+        for _, r := range reminders {
+            <li>
+            if r.IsDone {
+            <input type="checkbox" hx-target="closest div"
+                hx-post={string(templ.URL(fmt.Sprintf("reminder/%d", r.ID)))}
+                hx-trigger="click" name="isDone" value={strconv.FormatBool(!r.IsDone)}
+                hx-swap="outerHTML"/>
+             <span class="crossed-out"> { r.Text }</span>
+            }
+            else {
+            <input type="checkbox" hx-target="closest div"
+                hx-post={string(templ.URL(fmt.Sprintf("reminder/%d", r.ID)))}
+                hx-trigger="click" name="isDone" value={strconv.FormatBool(!r.IsDone)}
+                hx-swap="outerHTML"/>
+              { r.Text }
+            }
+            </li>
+        }
+        </ul>
+    </div>
+}
+
+templ History(histories []*models.History) {
+    <div hx-trigger="click" hx-get="/history" hx-target="this" hx-swap="outerHTML" class="block">
+      <h2>Журнал событий</h2>
+      <ul>
+        for _, h := range histories {
+        <li><span class="date">{ h.CreatedAt.Format("02-01-2006 15:04") }</span>: { h.Text }</li>
+        }
+      </ul>
+    </div>
+}
+
+templ DashboardDevices(devices []*models.DeviceWithData) {
+    <div class="block" id="devices">
+        <h2>Датчики</h2>
+        <div class="inner-block-container">
+            for _, device := range devices {
+               switch device.Category {
+               case 1:
+                 @temperatureDevice(device)
+               case 2:
+                 @humidityDevice(device)
+               default:
+                <div class="inner-block">
+                <h3>{ device.Name }</h3>
+               </div>
+               }
+            }
+        </div>
+    </div>
+}
+
+templ temperatureDevice(device *models.DeviceWithData) {
+    <div class="temperature inner-block">
+    <h3> { device.Name }</h3>
+    <img class="icon" src="/static/images/temperature.svg" alt=""/>
+    @OffButton(device)
+    <p> Температура: {strconv.FormatFloat(device.Value.Value, 'f', 1, 64)}°C</p>
+    </div>
+}
+
+templ humidityDevice(device *models.DeviceWithData) {
+    <div class="temperature inner-block">
+    @OffButton(device)
+    <h3> { device.Name }</h3>
+    <img class="icon" src="/static/images/humidity.svg" alt=""/>
+    <p> Влажность: {strconv.FormatFloat(device.Value.Value, 'f', 0, 64)}% </p>
+    </div>
+}
+
+templ OffButton(device *models.DeviceWithData) {
+    <div hx-post={string(templ.URL(fmt.Sprintf("device/power/%d", device.ID)))}
+        hx-target="this" hx-swap="outerHTML">
+    if device.Status {
+            <img src="/static/images/on.svg" class="icon" alt=""/>
+    } else {
+        <img src="/static/images/off.svg" class="icon" alt=""/>
+    }
+    </div>
+}

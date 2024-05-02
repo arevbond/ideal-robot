@@ -7,8 +7,10 @@ import (
 	"HestiaHome/internal/storage"
 	"HestiaHome/internal/utils/e"
 	"context"
+	"fmt"
 	mqtt2 "github.com/eclipse/paho.mqtt.golang"
 	"log/slog"
+	"strconv"
 )
 
 type Service struct {
@@ -20,8 +22,9 @@ type Service struct {
 func New(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) *Service {
 	client := mqtt.New(cfg.Address, cfg.Port, cfg.ClientID, cfg.Username, cfg.Password)
 	mqtt.Subscribe("topic/test", client)
-	go processData(log, db)
-	return &Service{log: log, db: db, mqttClient: client}
+	s := &Service{log: log, db: db, mqttClient: client}
+	go processData(log, db, s)
+	return s
 }
 
 func (s *Service) Rooms() ([]*models.Room, error) {
@@ -49,22 +52,13 @@ func (s *Service) GetRoom(id int) (*models.Room, error) {
 	return room, err
 }
 
-//func (s *Service) CreateDevice(roomID int, name, writeTopic, readTopic string, category int) error {
-//	err := s.db.CreateDevice(context.Background(), &models.CreateDevice{
-//		RoomID:     roomID,
-//		DeviceName:       name,
-//		Category:   category,
-//		WriteTopic: writeTopic,
-//		ReadTopic:  readTopic,
-//	})
-//	if err != nil {
-//		return e.Wrap("can't create device", err)
-//	}
-//
-//	mqtt.Subscribe(readTopic, s.mqttClient)
-//
-//	return nil
-//}
+func (s *Service) GetDevicesByRoomID(id int) ([]*models.DeviceWithData, error) {
+	devices, err := s.db.GetDevicesWithDataByRoomID(context.Background(), id)
+	if err != nil {
+		return nil, e.Wrap("service can't get devices by room id", err)
+	}
+	return devices, nil
+}
 
 func (s *Service) GetDevices() ([]*models.DeviceWithData, error) {
 	devices, err := s.db.GetDevicesWithData(context.Background())
@@ -80,4 +74,27 @@ func (s *Service) DeleteRoom(id int) error {
 		return e.Wrap("can't delete room by id", err)
 	}
 	return nil
+}
+
+func (s *Service) PowerDevice(id int) (*models.DeviceWithData, error) {
+	device, err := s.db.GetDeviceByID(context.Background(), id)
+	if err != nil {
+		return nil, e.Wrap("can't get device", err)
+	}
+	device.Status = !device.Status
+
+	mqtt.Publish(fmt.Sprintf("state/%d", id), s.mqttClient, strconv.FormatBool(device.Status))
+	s.log.Debug("send messega in topic", slog.Int("id", id))
+
+	err = s.db.UpdateDevice(context.Background(), device)
+	if err != nil {
+		return nil, e.Wrap("can't update device", err)
+	}
+
+	result, err := s.db.GetDevicesWithDataByID(context.Background(), id)
+	if err != nil {
+		return nil, e.Wrap("can't get device with data from db", err)
+	}
+
+	return result, nil
 }

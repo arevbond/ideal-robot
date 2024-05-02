@@ -9,100 +9,169 @@ import (
 	"github.com/go-chi/chi/v5"
 	"log/slog"
 	"net/http"
+	"strconv"
 )
 
-type roomHandler struct {
+type handler struct {
 	service *services.Service
 	log     *slog.Logger
 }
 
-func RoomRoutes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Router {
+func Routes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Router {
 	r := chi.NewRouter()
-	roomHandler := &roomHandler{services.New(log, db, cfg), log}
-	r.Get("/", roomHandler.Rooms)
-	r.Post("/", roomHandler.CreateRoom)
-	//r.Route("/{id}", func(r chi.Router) {
-	//	r.Use(roomHandler.RoomCtx)
-	//	r.Get("/", roomHandler.GetRoom)
-	//	r.Post("/device", roomHandler.CreateDevice)
-	//})
+	h := &handler{services.New(log, db, cfg), log}
+	r.Get("/{roomID}", h.Dashboard)
+	r.Get("/", h.Dashboard)
+
+	r.Route("/device", func(r chi.Router) {
+		r.Post("/power/{id}", h.PowerDevice)
+	})
+
+	r.Get("/history", h.GetHistories)
+
+	r.Route("/reminder", func(r chi.Router) {
+		r.Post("/{id}", h.UpdateReminder)
+	})
+
+	r.Route("/room/{id}", func(r chi.Router) {
+		r.Delete("/", h.DeleteRoom)
+	})
 	return r
 }
 
-//func (h *roomHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
-//	r.ParseForm()
-//	name := r.Form.Get("name")
-//	category := r.Form.Get("type")
-//	writeTopic := r.Form.Get("write_topic")
-//	readTopic := r.Form.Get("read_topic")
-//	strRoomID := r.Form.Get("room_id")
-//	roomID, err := strconv.Atoi(strRoomID)
-//	if err != nil {
-//		h.log.Error("can't convert room_id to int", slog.String("room_id", strRoomID))
-//		return
-//	}
-//
-//	err = h.service.CreateDevice(roomID, name, writeTopic, readTopic, getCategory(category))
-//	if err != nil {
-//		h.log.Error("can't create deivce", slog.Any("error", err))
-//		return
-//	}
-//}
+func (h *handler) PowerDevice(w http.ResponseWriter, r *http.Request) {
+	if strID := chi.URLParam(r, "id"); strID != "" {
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			http.Error(w, "invalid ID", http.StatusBadRequest)
+			return
+		}
 
-func getCategory(category string) int {
-	switch category {
-	case "temperature":
-		return 1
-	case "humidity":
-		return 2
-	case "motion":
-		return 3
+		device, err := h.service.PowerDevice(id)
+		if err != nil {
+			http.Error(w, "can't power device", http.StatusBadRequest)
+			return
+		}
+
+		h.viewOffButton(w, r, device)
 	}
-	return 0
 }
 
-func (h *roomHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	name := r.Form.Get("name")
-	err := h.service.CreateRoom(name)
-	if err != nil {
-		h.log.Error("failed to create room", slog.Any("error", err))
-		http.Error(w, "failed to create room", http.StatusInternalServerError)
-		return
+func (h *handler) UpdateReminder(w http.ResponseWriter, r *http.Request) {
+	if strID := chi.URLParam(r, "id"); strID != "" {
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			http.Error(w, "invalid ID", http.StatusBadRequest)
+			return
+		}
+		isDoneStr := r.FormValue("isDone")
+		isDone, err := strconv.ParseBool(isDoneStr)
+		if err != nil {
+			http.Error(w, "invalid bool value", http.StatusBadRequest)
+			return
+		}
+
+		err = h.service.UpdateReminder(id, isDone)
+		if err != nil {
+			http.Error(w, "can't update value", http.StatusBadRequest)
+			return
+		}
+
+		reminders, err := h.service.GetReminders(5)
+		if err != nil {
+			h.log.Error("failed to get reminders", slog.Any("error", err))
+			http.Error(w, "failed to get reminders", http.StatusInternalServerError)
+			return
+		}
+
+		h.viewReminders(w, r, reminders)
 	}
-	rooms, err := h.service.Rooms()
-	if err != nil {
-		h.log.Error("failed to increment", slog.Any("error", err))
-		http.Error(w, "failed to get rooms", http.StatusInternalServerError)
-		return
-	}
-	h.ViewRooms(w, r, viewRoomsProp{rooms, []*models.DeviceWithData{}})
 }
 
-func (h *roomHandler) Rooms(w http.ResponseWriter, r *http.Request) {
+func (h *handler) GetHistories(w http.ResponseWriter, r *http.Request) {
+	histories, err := h.service.GetHistories(5)
+	if err != nil {
+		h.log.Error("failed to get histories", slog.Any("error", err))
+		http.Error(w, "failed to get histories", http.StatusInternalServerError)
+		return
+	}
+
+	h.viewHistory(w, r, histories)
+}
+
+func (h *handler) Dashboard(w http.ResponseWriter, r *http.Request) {
+	if strID := chi.URLParam(r, "roomID"); strID != "" {
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			return
+		}
+
+		devices, err := h.service.GetDevicesByRoomID(id)
+		if err != nil {
+			h.log.Error("can't get devices", "error", err)
+			http.Error(w, "can't get devices", http.StatusBadRequest)
+			return
+		}
+
+		h.viewDevicesInDashboard(w, r, viewDashboardProp{devices: devices})
+		return
+	}
+
 	rooms, err := h.service.Rooms()
 	if err != nil {
-		h.log.Error("failed to increment", slog.Any("error", err))
+		h.log.Error("failed to get rooms", slog.Any("error", err))
 		http.Error(w, "failed to get rooms", http.StatusInternalServerError)
 		return
 	}
 	devices, err := h.service.GetDevices()
-	h.ViewRooms(w, r, viewRoomsProp{rooms: rooms, devices: devices})
+	if err != nil {
+		h.log.Error("failed to get devices", slog.Any("error", err))
+		http.Error(w, "failed to get devices", http.StatusInternalServerError)
+		return
+	}
+
+	histories, err := h.service.GetHistories(5)
+	if err != nil {
+		h.log.Error("failed to get histories", slog.Any("error", err))
+		http.Error(w, "failed to get histories", http.StatusInternalServerError)
+		return
+	}
+
+	reminders, err := h.service.GetReminders(5)
+	if err != nil {
+		h.log.Error("failed to get reminders", slog.Any("error", err))
+		http.Error(w, "failed to get reminders", http.StatusInternalServerError)
+		return
+	}
+
+	h.viewDashboard(w, r, viewDashboardProp{rooms: rooms, devices: devices,
+		histories: histories, reminders: reminders})
 }
 
-type viewRoomsProp struct {
-	rooms   []*models.Room
-	devices []*models.DeviceWithData
+type viewDashboardProp struct {
+	rooms     []*models.Room
+	devices   []*models.DeviceWithData
+	histories []*models.History
+	reminders []*models.Reminder
 }
 
-func (h *roomHandler) ViewRooms(w http.ResponseWriter, r *http.Request, props viewRoomsProp) {
-	components.Rooms(props.rooms, props.devices).Render(r.Context(), w)
+func (h *handler) viewDashboard(w http.ResponseWriter, r *http.Request, props viewDashboardProp) {
+	components.Dashboard(props.rooms, props.devices, props.histories, props.reminders).Render(r.Context(), w)
 }
 
-type viewRoomProp struct {
-	room *models.Room
+func (h *handler) viewDevicesInDashboard(w http.ResponseWriter, r *http.Request, props viewDashboardProp) {
+	components.DashboardDevices(props.devices).Render(r.Context(), w)
 }
 
-//func (h *roomHandler) ViewRoom(w http.ResponseWriter, r *http.Request, props viewRoomProp) {
-//	components.Room(props.room).Render(r.Context(), w)
-//}
+func (h *handler) viewHistory(w http.ResponseWriter, r *http.Request, histories []*models.History) {
+	components.History(histories).Render(r.Context(), w)
+}
+
+func (h *handler) viewReminders(w http.ResponseWriter, r *http.Request, reminders []*models.Reminder) {
+	components.DashboardReminders(reminders).Render(r.Context(), w)
+}
+
+func (h *handler) viewOffButton(w http.ResponseWriter, r *http.Request, device *models.DeviceWithData) {
+	components.OffButton(device).Render(r.Context(), w)
+}

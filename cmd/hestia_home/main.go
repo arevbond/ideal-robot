@@ -44,7 +44,10 @@ func main() {
 	router.Use(middleware.URLFormat)
 	router.Use(mwLoger.New(log))
 
-	router.Mount("/", handlers.RoomRoutes(log, db, cfg.MQTT))
+	router.Mount("/", handlers.Routes(log, db, cfg.MQTT))
+
+	fileServer := http.FileServer(http.Dir("internal/publicapi/static"))
+	router.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
 	err = http.ListenAndServe(cfg.Server.Address, router)
 	if err != nil {
