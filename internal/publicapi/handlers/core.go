@@ -22,12 +22,70 @@ func Routes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Rou
 	h := &handler{services.New(log, db, cfg), log}
 	r.Get("/{roomID}", h.Dashboard)
 	r.Get("/", h.Dashboard)
+
+	r.Route("/device", func(r chi.Router) {
+		r.Post("/power/{id}", h.PowerDevice)
+	})
+
 	r.Get("/history", h.GetHistories)
+
+	r.Route("/reminder", func(r chi.Router) {
+		r.Post("/{id}", h.UpdateReminder)
+	})
 
 	r.Route("/room/{id}", func(r chi.Router) {
 		r.Delete("/", h.DeleteRoom)
 	})
 	return r
+}
+
+func (h *handler) PowerDevice(w http.ResponseWriter, r *http.Request) {
+	if strID := chi.URLParam(r, "id"); strID != "" {
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			http.Error(w, "invalid ID", http.StatusBadRequest)
+			return
+		}
+
+		device, err := h.service.PowerDevice(id)
+		if err != nil {
+			http.Error(w, "can't power device", http.StatusBadRequest)
+			return
+		}
+
+		h.viewOffButton(w, r, device)
+	}
+}
+
+func (h *handler) UpdateReminder(w http.ResponseWriter, r *http.Request) {
+	if strID := chi.URLParam(r, "id"); strID != "" {
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			http.Error(w, "invalid ID", http.StatusBadRequest)
+			return
+		}
+		isDoneStr := r.FormValue("isDone")
+		isDone, err := strconv.ParseBool(isDoneStr)
+		if err != nil {
+			http.Error(w, "invalid bool value", http.StatusBadRequest)
+			return
+		}
+
+		err = h.service.UpdateReminder(id, isDone)
+		if err != nil {
+			http.Error(w, "can't update value", http.StatusBadRequest)
+			return
+		}
+
+		reminders, err := h.service.GetReminders(5)
+		if err != nil {
+			h.log.Error("failed to get reminders", slog.Any("error", err))
+			http.Error(w, "failed to get reminders", http.StatusInternalServerError)
+			return
+		}
+
+		h.viewReminders(w, r, reminders)
+	}
 }
 
 func (h *handler) GetHistories(w http.ResponseWriter, r *http.Request) {
@@ -108,4 +166,12 @@ func (h *handler) viewDevicesInDashboard(w http.ResponseWriter, r *http.Request,
 
 func (h *handler) viewHistory(w http.ResponseWriter, r *http.Request, histories []*models.History) {
 	components.History(histories).Render(r.Context(), w)
+}
+
+func (h *handler) viewReminders(w http.ResponseWriter, r *http.Request, reminders []*models.Reminder) {
+	components.DashboardReminders(reminders).Render(r.Context(), w)
+}
+
+func (h *handler) viewOffButton(w http.ResponseWriter, r *http.Request, device *models.DeviceWithData) {
+	components.OffButton(device).Render(r.Context(), w)
 }

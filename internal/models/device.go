@@ -18,6 +18,7 @@ type DeviceWithData struct {
 	Value      Value     `db:"value"`
 	Unit       string    `db:"unit"`
 	ReceivedAt time.Time `db:"received_at"`
+	Status     bool      `db:"status"`
 }
 
 type Value struct {

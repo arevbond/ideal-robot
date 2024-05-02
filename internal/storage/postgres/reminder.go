@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Storage) GetReminders(ctx context.Context, limit int) ([]*models.Reminder, error) {
-	q := `SELECT * FROM reminders ORDER BY priority LIMIT $1`
+	q := `SELECT * FROM reminders ORDER BY priority, text LIMIT $1`
 
 	result := []*models.Reminder{}
 	err := s.db.SelectContext(ctx, &result, q, limit)
@@ -16,6 +16,17 @@ func (s *Storage) GetReminders(ctx context.Context, limit int) ([]*models.Remind
 		return nil, e.Wrap("can't getl all reminders", err)
 	}
 	return result, nil
+}
+
+func (s *Storage) GetReminder(ctx context.Context, id int) (*models.Reminder, error) {
+	q := `SELECT * FROM reminders WHERE id = $1`
+
+	var result models.Reminder
+	err := s.db.GetContext(ctx, &result, q, id)
+	if err != nil {
+		return nil, e.Wrap("can't get reminder", err)
+	}
+	return &result, nil
 }
 
 func (s *Storage) CreateReminder(ctx context.Context, reminder *models.CreateReminder) error {

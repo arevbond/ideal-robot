@@ -79,6 +79,10 @@ li {
     margin-bottom: 10px;
 }
 
+.crossed-out {
+    text-decoration: line-through;
+}
+
 .date {
     font-weight: bold; /* Жирный текст для даты */
     color: black; /* Цвет текста для даты */

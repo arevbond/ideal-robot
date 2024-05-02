@@ -29,10 +29,12 @@ type RoomRepository interface {
 
 type DeviceRepository interface {
 	GetDevicesWithData(ctx context.Context) ([]*models.DeviceWithData, error)
-	GetDevicesWithDataByID(ctx context.Context, id int) ([]*models.DeviceWithData, error)
+	GetDevicesWithDataByID(ctx context.Context, id int) (*models.DeviceWithData, error)
+	GetDevicesWithDataByRoomID(ctx context.Context, id int) ([]*models.DeviceWithData, error)
 	GetDevices(ctx context.Context) ([]*models.Device, error)
 	CreateDevice(ctx context.Context, device *models.Device) error
 	GetDeviceByID(ctx context.Context, id int) (*models.Device, error)
+	UpdateDevice(ctx context.Context, device *models.Device) error
 	GetDevicesByRoomID(ctx context.Context, roomID int, offset, limit int) ([]*models.Device, error)
 }
 
@@ -51,4 +53,6 @@ type HistoryRepository interface {
 type ReminderRepository interface {
 	GetReminders(ctx context.Context, limit int) ([]*models.Reminder, error)
 	CreateReminder(ctx context.Context, reminder *models.CreateReminder) error
+	UpdateReminder(ctx context.Context, reminder *models.Reminder) error
+	GetReminder(ctx context.Context, id int) (*models.Reminder, error)
 }
