@@ -7,7 +7,7 @@ import (
 	"log/slog"
 )
 
-func (s *Service) GetReminders(limit int) ([]*models.Reminder, error) {
+func (s *Service) AllReminders(limit int) ([]*models.Reminder, error) {
 	if limit < 0 {
 		limit = 5
 	}
@@ -27,8 +27,6 @@ func (s *Service) GetReminder(id int) (*models.Reminder, error) {
 }
 
 func (s *Service) CreateReminder(text string, priority string) ([]*models.Reminder, error) {
-	s.log.Debug("reminder text", slog.String("text", text))
-	s.log.Debug("reminder priority", slog.String("priority", priority))
 	pr := 0
 	switch priority {
 	case "medium":

@@ -8,7 +8,7 @@ import (
 )
 
 func (h *handler) Reminders(w http.ResponseWriter, r *http.Request) {
-	reminders, err := h.service.GetReminders(100)
+	reminders, err := h.service.AllReminders(100)
 	if err != nil {
 		h.log.Error("failed to get reminders", slog.Any("error", err))
 		http.Error(w, "failed to get reminders", http.StatusInternalServerError)

@@ -82,7 +82,7 @@ templ dashboardRooms(rooms []*models.Room) {
         <div class="inner-block-container">
         for _, room := range rooms {
         <div class="cursor inner-block" hx-trigger="click" hx-target="#devices" hx-swap="outerHTML"
-        hx-get={string(templ.URL(fmt.Sprintf("/%d", room.ID)))}>
+        hx-get={string(templ.URL(fmt.Sprintf("/dashboard/%d", room.ID)))}>
         <h3>{ room.Name }</h3>
 
         <img hx-trigger="click" hx-target="closest .inner-block" hx-swap="outerHTML"

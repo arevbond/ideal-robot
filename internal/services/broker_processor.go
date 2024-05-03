@@ -11,16 +11,18 @@ import (
 	"time"
 )
 
-func processData(log *slog.Logger, db storage.Storage, s *Service) {
+func processDataFromMQTT(log *slog.Logger, db storage.Storage, s *Service) {
 	for {
-		data := <-mqtt.DevicesData
-		createDeviceData := extractDataByCategory(data)
-		log.Info("receive data from broker", slog.Any("data", data))
-		err := writeDataInStorage(s, log, db, data, createDeviceData)
-		if err != nil {
-			log.Error("can't write data in storage", slog.Any("error", err))
+		select {
+		case data := <-mqtt.DevicesData:
+			createDeviceData := extractDataByCategory(data)
+			log.Info("receive data from broker", slog.Any("data", data))
+			err := writeDataInStorage(s, log, db, data, createDeviceData)
+			if err != nil {
+				log.Error("can't write data in storage", slog.Any("error", err))
+			}
+			time.Sleep(1 * time.Second)
 		}
-		time.Sleep(1 * time.Second)
 	}
 }
 

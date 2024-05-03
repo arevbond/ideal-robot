@@ -67,7 +67,7 @@ func (s *Storage) GetDevicesWithDataByID(ctx context.Context, id int) (*models.D
 }
 
 func (s *Storage) GetDevicesWithDataByRoomID(ctx context.Context, id int) ([]*models.DeviceWithData, error) {
-	q := `SELECT d.id AS device_id, d.name AS device_name, d.category as category, dd.value, dd.unit, dd.received_at
+	q := `SELECT d.id AS device_id, d.name AS device_name, d.category as category, d.status as status, dd.value, dd.unit, dd.received_at
 		FROM devices d
 		JOIN (
 			SELECT device_id, MAX(received_at) AS max_received_at
