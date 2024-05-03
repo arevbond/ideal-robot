@@ -27,7 +27,7 @@ func sidebar() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"sidebar\"><a href=\"/\"><img class=\"logo\" src=\"/static/images/logo.svg\" alt=\"\"></a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/profile_icon.svg\" alt=\"\"> Профиль</a> <a href=\"#notifications\" class=\"tab\"><img class=\"icon\" src=\"/static/images/notification.svg\" alt=\"\"> Уведомления</a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/dashboard.svg\" alt=\"\"> Панель</a> <a href=\"#rooms\" class=\"tab\"><img class=\"icon\" src=\"/static/images/rooms.svg\" alt=\"\"> Комнаты</a> <a href=\"#sensors\" class=\"tab\"><img class=\"icon\" src=\"/static/images/devices.svg\" alt=\"\"> Датчики</a> <a href=\"#reminders\" class=\"tab\"><img class=\"icon\" src=\"/static/images/todo.svg\" alt=\"\"> ToDo</a> <a href=\"#schedule\" class=\"tab\"><img class=\"icon\" src=\"/static/images/time.svg\" alt=\"\"> Расписание</a> <a href=\"#automation\" class=\"tab\"><img class=\"icon\" src=\"/static/images/automation.svg\" alt=\"\"> Автоматизация</a> <a href=\"#settings\" class=\"tab\"><img class=\"icon\" src=\"/static/images/settings.svg\" alt=\"\"> Настройки</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"sidebar\"><a href=\"/\"><img class=\"logo\" src=\"/static/images/logo.svg\" alt=\"\"></a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/profile_icon.svg\" alt=\"\"> Профиль</a> <a href=\"#notifications\" class=\"tab\"><img class=\"icon\" src=\"/static/images/notification.svg\" alt=\"\"> Уведомления</a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/dashboard.svg\" alt=\"\"> Панель</a> <a href=\"#rooms\" class=\"tab\"><img class=\"icon\" src=\"/static/images/rooms.svg\" alt=\"\"> Комнаты</a> <a href=\"#sensors\" class=\"tab\"><img class=\"icon\" src=\"/static/images/devices.svg\" alt=\"\"> Датчики</a> <a href=\"/reminder\" class=\"tab\"><img class=\"icon\" src=\"/static/images/todo.svg\" alt=\"\"> Напоминания</a> <a href=\"#schedule\" class=\"tab\"><img class=\"icon\" src=\"/static/images/time.svg\" alt=\"\"> Расписание</a> <a href=\"#automation\" class=\"tab\"><img class=\"icon\" src=\"/static/images/automation.svg\" alt=\"\"> Автоматизация</a> <a href=\"#settings\" class=\"tab\"><img class=\"icon\" src=\"/static/images/settings.svg\" alt=\"\"> Настройки</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -51,7 +51,7 @@ func Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, histories
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Rooms</title><script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2\" crossorigin=\"anonymous\"></script><link rel=\"stylesheet\" href=\"/static/style.css\" media=\"screen\"></head><body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Dashboard</title><script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2\" crossorigin=\"anonymous\"></script><link rel=\"stylesheet\" href=\"/static/style.css\" media=\"screen\"></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -59,7 +59,7 @@ func Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, histories
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dashboard-content\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -566,12 +566,12 @@ func OffButton(device *models.DeviceWithData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if device.Status {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img src=\"/static/images/on.svg\" class=\"icon\" alt=\"\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img src=\"/static/images/on.svg\" class=\"icon\" alt=\"\"> ON")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img src=\"/static/images/off.svg\" class=\"icon\" alt=\"\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img src=\"/static/images/off.svg\" class=\"icon\" alt=\"\"> OFF")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

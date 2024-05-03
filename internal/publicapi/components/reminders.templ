@@ -1,0 +1,69 @@
+package components
+
+import "HestiaHome/internal/models"
+
+templ Reminders(reminders []*models.Reminder) {
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>Reminders</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/style.css" media="screen"/>
+    </head>
+    <body>
+    @sidebar()
+    <div class="content">
+         <div class="reminders-blocks">
+          @AllReminders(reminders)
+
+         <div class="reminder-form">
+             <h2>Добавить задачу</h2>
+             <form id="task-form">
+                 <label for="task">Задача:</label>
+                 <input type="text" id="task" name="text" required/>
+                 <label for="priority">Приоритет:</label>
+                 <select id="priority" name="priority" required>
+                     <option value="low">Низкий</option>
+                     <option value="medium">Средний</option>
+                     <option value="high">Высокий</option>
+                 </select>
+                 <button hx-post="/reminder"
+                 hx-trigger="click"
+                 hx-target="#reminders-block"
+                 hx-swap="outerHTML"
+                 type="submit">Добавить</button>
+             </form>
+         </div>
+
+         </div>
+    </div>
+    </body>
+    </html>
+}
+
+templ AllReminders(reminders []*models.Reminder) {
+    <div class="reminders-block" id="reminders-block">
+    <h2>Список задач: </h2>
+    <ul>
+    for _, r := range reminders {
+        switch r.Priority {
+        case 0:
+        <li class="low-priority">
+          { r.Text }
+        </li>
+        case 1:
+        <li class="medium-priority">
+          { r.Text }
+        </li>
+        case 2:
+        <li class="high-priority">
+          { r.Text }
+        </li>
+        }
+    }
+    </ul>
+    </div>
+}

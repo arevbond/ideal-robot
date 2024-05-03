@@ -30,6 +30,8 @@ func Routes(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) chi.Rou
 	r.Get("/history", h.GetHistories)
 
 	r.Route("/reminder", func(r chi.Router) {
+		r.Post("/", h.CreateReminder)
+		r.Get("/", h.Reminders)
 		r.Post("/{id}", h.UpdateReminder)
 	})
 
@@ -145,7 +147,7 @@ func (h *handler) Dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.viewDashboard(w, r, viewDashboardProp{rooms: rooms, devices: devices,
+	h.viewDashboardPage(w, r, viewDashboardProp{rooms: rooms, devices: devices,
 		histories: histories, reminders: reminders})
 }
 
@@ -156,7 +158,7 @@ type viewDashboardProp struct {
 	reminders []*models.Reminder
 }
 
-func (h *handler) viewDashboard(w http.ResponseWriter, r *http.Request, props viewDashboardProp) {
+func (h *handler) viewDashboardPage(w http.ResponseWriter, r *http.Request, props viewDashboardProp) {
 	components.Dashboard(props.rooms, props.devices, props.histories, props.reminders).Render(r.Context(), w)
 }
 

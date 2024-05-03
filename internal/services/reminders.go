@@ -26,13 +26,28 @@ func (s *Service) GetReminder(id int) (*models.Reminder, error) {
 	return reminder, nil
 }
 
-func (s *Service) CreateReminders(text string) error {
-	createReminder := &models.CreateReminder{Text: text, IsDone: false, Priority: 0}
+func (s *Service) CreateReminder(text string, priority string) ([]*models.Reminder, error) {
+	s.log.Debug("reminder text", slog.String("text", text))
+	s.log.Debug("reminder priority", slog.String("priority", priority))
+	pr := 0
+	switch priority {
+	case "medium":
+		pr = 1
+	case "high":
+		pr = 2
+	}
+	createReminder := &models.CreateReminder{Text: text, IsDone: false, Priority: pr}
 	err := s.db.CreateReminder(context.Background(), createReminder)
 	if err != nil {
-		return e.Wrap("can't create reminder", err)
+		return nil, e.Wrap("can't create reminder", err)
 	}
-	return nil
+
+	allReminders, err := s.db.GetReminders(context.Background(), 100)
+	if err != nil {
+		return nil, e.Wrap("can't get all reminders", err)
+	}
+
+	return allReminders, nil
 }
 
 func (s *Service) UpdateReminder(id int, isDone bool) error {

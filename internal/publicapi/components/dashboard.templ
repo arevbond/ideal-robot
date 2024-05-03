@@ -27,9 +27,9 @@ templ sidebar() {
             <img class="icon" src="/static/images/devices.svg" alt=""/>
             Датчики
         </a>
-        <a href="#reminders" class="tab">
+        <a href="/reminder" class="tab">
             <img class="icon" src="/static/images/todo.svg" alt=""/>
-            ToDo
+            Напоминания
         </a>
         <a href="#schedule" class="tab">
             <img class="icon" src="/static/images/time.svg" alt=""/>
@@ -54,13 +54,13 @@ templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, historie
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
         <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-        <title>Rooms</title>
+        <title>Dashboard</title>
         <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="/static/style.css" media="screen"/>
     </head>
     <body>
     @sidebar()
-    <div class="dashboard-content">
+    <div class="content">
 
     @dashboardRooms(rooms)
 
@@ -175,9 +175,9 @@ templ OffButton(device *models.DeviceWithData) {
     <div hx-post={string(templ.URL(fmt.Sprintf("device/power/%d", device.ID)))}
         hx-target="this" hx-swap="outerHTML">
     if device.Status {
-            <img src="/static/images/on.svg" class="icon" alt=""/>
+            <img src="/static/images/on.svg" class="icon" alt=""/> ON
     } else {
-        <img src="/static/images/off.svg" class="icon" alt=""/>
+        <img src="/static/images/off.svg" class="icon" alt=""/> OFF
     }
     </div>
 }
