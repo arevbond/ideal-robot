@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func (h *handler) DeleteRoom(w http.ResponseWriter, r *http.Request) {
+func (h *handler) deleteRoom(w http.ResponseWriter, r *http.Request) {
 	if strID := chi.URLParam(r, "id"); strID != "" {
 		id, err := strconv.Atoi(strID)
 		if err != nil {

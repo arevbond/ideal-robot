@@ -23,11 +23,11 @@ func New(log *slog.Logger, db storage.Storage, cfg config.MQTTConfig) *Service {
 	client := mqtt.New(cfg.Address, cfg.Port, cfg.ClientID, cfg.Username, cfg.Password)
 	mqtt.Subscribe("topic/test", client)
 	s := &Service{log: log, db: db, mqttClient: client}
-	go processData(log, db, s)
+	go processDataFromMQTT(log, db, s)
 	return s
 }
 
-func (s *Service) Rooms() ([]*models.Room, error) {
+func (s *Service) AllRooms() ([]*models.Room, error) {
 	rooms, err := s.db.GetRooms(context.Background())
 	if err != nil {
 		return nil, e.Wrap("can't get rooms", err)
@@ -60,7 +60,7 @@ func (s *Service) GetDevicesByRoomID(id int) ([]*models.DeviceWithData, error) {
 	return devices, nil
 }
 
-func (s *Service) GetDevices() ([]*models.DeviceWithData, error) {
+func (s *Service) GetAllDevicesWithData() ([]*models.DeviceWithData, error) {
 	devices, err := s.db.GetDevicesWithData(context.Background())
 	if err != nil {
 		return nil, e.Wrap("service can't get devices by room id", err)
