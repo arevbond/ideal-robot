@@ -27,7 +27,7 @@ func sidebar() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"sidebar\"><a href=\"/\"><img class=\"logo\" src=\"/static/images/logo.svg\" alt=\"\"></a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/profile_icon.svg\" alt=\"\"> Профиль</a> <a href=\"#notifications\" class=\"tab\"><img class=\"icon\" src=\"/static/images/notification.svg\" alt=\"\"> Уведомления</a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/dashboard.svg\" alt=\"\"> Панель</a> <a href=\"#rooms\" class=\"tab\"><img class=\"icon\" src=\"/static/images/rooms.svg\" alt=\"\"> Комнаты</a> <a href=\"#sensors\" class=\"tab\"><img class=\"icon\" src=\"/static/images/devices.svg\" alt=\"\"> Датчики</a> <a href=\"/reminder\" class=\"tab\"><img class=\"icon\" src=\"/static/images/todo.svg\" alt=\"\"> Напоминания</a> <a href=\"#schedule\" class=\"tab\"><img class=\"icon\" src=\"/static/images/time.svg\" alt=\"\"> Расписание</a> <a href=\"#automation\" class=\"tab\"><img class=\"icon\" src=\"/static/images/automation.svg\" alt=\"\"> Автоматизация</a> <a href=\"#settings\" class=\"tab\"><img class=\"icon\" src=\"/static/images/settings.svg\" alt=\"\"> Настройки</a></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"sidebar\"><a href=\"/\"><img class=\"logo\" src=\"/static/images/logo.svg\" alt=\"\"></a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/profile_icon.svg\" alt=\"\"> Профиль</a> <a href=\"#notifications\" class=\"tab\"><img class=\"icon\" src=\"/static/images/notification.svg\" alt=\"\"> Уведомления</a> <a href=\"/\" class=\"tab\"><img class=\"icon\" src=\"/static/images/dashboard.svg\" alt=\"\"> Панель</a> <a href=\"#rooms\" class=\"tab\"><img class=\"icon\" src=\"/static/images/rooms.svg\" alt=\"\"> Комнаты</a> <a href=\"#sensors\" class=\"tab\"><img class=\"icon\" src=\"/static/images/devices.svg\" alt=\"\"> Датчики</a> <a href=\"/reminder\" class=\"tab\"><img class=\"icon\" src=\"/static/images/todo.svg\" alt=\"\"> Напоминания</a> <a href=\"#schedule\" class=\"tab\"><img class=\"icon\" src=\"/static/images/time.svg\" alt=\"\"> Расписание</a> <a href=\"#automation\" class=\"tab\"><img class=\"icon\" src=\"/static/images/automation.svg\" alt=\"\"> Автоматизация</a><!-- <a href=\"#settings\" class=\"tab\">\n            <img class=\"icon\" src=\"/static/images/settings.svg\" alt=\"\"/>\n            Настройки\n        </a> --></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -51,7 +51,7 @@ func Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, histories
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Dashboard</title><script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2\" crossorigin=\"anonymous\"></script><link rel=\"stylesheet\" href=\"/static/style.css\" media=\"screen\"></head><body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><meta name=\"color-scheme\" content=\"light dark\"><title>Dashboard</title><script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2\" crossorigin=\"anonymous\"></script><link rel=\"stylesheet\" href=\"/static/style.css\" media=\"screen\"><link rel=\"stylesheet\" href=\"static/pico-main/css/pico.css\"></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -59,7 +59,7 @@ func Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, histories
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"content\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -115,7 +115,7 @@ func dashboardRooms(rooms []*models.Room) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.URL(fmt.Sprintf("/dashboard/%d", room.ID))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 85, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 87, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -128,7 +128,7 @@ func dashboardRooms(rooms []*models.Room) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(room.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 86, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 88, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -141,7 +141,7 @@ func dashboardRooms(rooms []*models.Room) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Вы уверены, что хотите удалить комнату %s?", room.Name))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 89, Col: 120}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 91, Col: 120}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -154,7 +154,7 @@ func dashboardRooms(rooms []*models.Room) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.URL(fmt.Sprintf("/room/%d", room.ID))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 90, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 92, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -199,14 +199,14 @@ func DashboardReminders(reminders []*models.Reminder) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if r.IsDone {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"checkbox\" hx-target=\"closest div\" hx-post=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input checked type=\"checkbox\" hx-target=\"closest div\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.URL(fmt.Sprintf("reminder/%d", r.ID))))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 107, Col: 76}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 109, Col: 76}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -219,7 +219,7 @@ func DashboardReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatBool(!r.IsDone))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 108, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 110, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -232,7 +232,7 @@ func DashboardReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(r.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 110, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 112, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -250,7 +250,7 @@ func DashboardReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.URL(fmt.Sprintf("reminder/%d", r.ID))))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 114, Col: 76}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 116, Col: 76}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -263,7 +263,7 @@ func DashboardReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatBool(!r.IsDone))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 115, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 117, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -276,7 +276,7 @@ func DashboardReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(r.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 117, Col: 22}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 119, Col: 22}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -324,7 +324,7 @@ func History(histories []*models.History) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(h.CreatedAt.Format("02-01-2006 15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 130, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 132, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -337,7 +337,7 @@ func History(histories []*models.History) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(h.Text)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 130, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 132, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -396,7 +396,7 @@ func DashboardDevices(devices []*models.DeviceWithData) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(device.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 148, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 151, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -432,20 +432,7 @@ func temperatureDevice(device *models.DeviceWithData) templ.Component {
 			templ_7745c5c3_Var20 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"temperature inner-block\"><h3>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var21 string
-		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(device.Name)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 158, Col: 22}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3><img class=\"icon\" src=\"/static/images/temperature.svg\" alt=\"\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"temperature inner-block\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -453,16 +440,16 @@ func temperatureDevice(device *models.DeviceWithData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>Температура: ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img class=\"icon\" src=\"/static/images/temperature.svg\" alt=\"\"><p>Температура: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(device.Value.Value, 'f', 1, 64))
+		var templ_7745c5c3_Var21 string
+		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(device.Value.Value, 'f', 1, 64))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 161, Col: 84}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 164, Col: 84}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -485,9 +472,9 @@ func humidityDevice(device *models.DeviceWithData) templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var23 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var23 == nil {
-			templ_7745c5c3_Var23 = templ.NopComponent
+		templ_7745c5c3_Var22 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var22 == nil {
+			templ_7745c5c3_Var22 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"temperature inner-block\">")
@@ -498,29 +485,16 @@ func humidityDevice(device *models.DeviceWithData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h3>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img class=\"icon\" src=\"/static/images/humidity.svg\" alt=\"\"><p>Влажность: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var24 string
-		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(device.Name)
+		var templ_7745c5c3_Var23 string
+		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(device.Value.Value, 'f', 0, 64))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 168, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 173, Col: 80}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3><img class=\"icon\" src=\"/static/images/humidity.svg\" alt=\"\"><p>Влажность: ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var25 string
-		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatFloat(device.Value.Value, 'f', 0, 64))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 170, Col: 80}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -543,21 +517,21 @@ func OffButton(device *models.DeviceWithData) templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var26 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var26 == nil {
-			templ_7745c5c3_Var26 = templ.NopComponent
+		templ_7745c5c3_Var24 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var24 == nil {
+			templ_7745c5c3_Var24 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var27 string
-		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.URL(fmt.Sprintf("device/power/%d", device.ID))))
+		var templ_7745c5c3_Var25 string
+		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.URL(fmt.Sprintf("device/power/%d", device.ID))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 175, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/dashboard.templ`, Line: 178, Col: 78}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

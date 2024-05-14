@@ -25,7 +25,7 @@ func Reminders(reminders []*models.Reminder) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Reminders</title><script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2\" crossorigin=\"anonymous\"></script><link rel=\"stylesheet\" href=\"/static/style.css\" media=\"screen\"></head><body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><meta name=\"color-scheme\" content=\"light dark\"><title>Reminders</title><script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2\" crossorigin=\"anonymous\"></script><link rel=\"stylesheet\" href=\"/static/style.css\" media=\"screen\"><link rel=\"stylesheet\" href=\"static/pico-main/css/pico.css\"></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -33,7 +33,7 @@ func Reminders(reminders []*models.Reminder) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"content\"><div class=\"reminders-blocks\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container\"><div class=\"reminders-blocks\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -41,7 +41,7 @@ func Reminders(reminders []*models.Reminder) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"reminder-form\"><h2>Добавить задачу</h2><form id=\"task-form\"><label for=\"task\">Задача:</label> <input type=\"text\" id=\"task\" name=\"text\" required> <label for=\"priority\">Приоритет:</label> <select id=\"priority\" name=\"priority\" required><option value=\"low\">Низкий</option> <option value=\"medium\">Средний</option> <option value=\"high\">Высокий</option></select> <button hx-post=\"/reminder\" hx-trigger=\"click\" hx-target=\"#reminders-block\" hx-swap=\"outerHTML\" type=\"submit\">Добавить</button></form></div></div></div></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"reminder-form\"><h2>Добавить задачу</h2><form id=\"task-form\"><input type=\"text\" id=\"task\" name=\"text\" placeholder=\"Задача...\" required> <label for=\"priority\">Приоритет:</label> <select id=\"priority\" name=\"priority\" required><option value=\"low\">Низкий</option> <option value=\"medium\">Средний</option> <option value=\"high\">Высокий</option></select> <button hx-post=\"/reminder\" hx-trigger=\"click\" hx-target=\"#reminders-block\" hx-swap=\"outerHTML\" type=\"submit\">Добавить</button></form></div></div></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -79,7 +79,7 @@ func AllReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(r.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/reminders.templ`, Line: 55, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/reminders.templ`, Line: 57, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -97,7 +97,7 @@ func AllReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(r.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/reminders.templ`, Line: 59, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/reminders.templ`, Line: 61, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -115,7 +115,7 @@ func AllReminders(reminders []*models.Reminder) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(r.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/reminders.templ`, Line: 63, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/publicapi/components/reminders.templ`, Line: 65, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {

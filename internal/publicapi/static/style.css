@@ -88,7 +88,7 @@ li {
     color: black; /* Цвет текста для даты */
 }
 
-.content {
+.container {
     display: flex;
     flex-wrap: wrap; /* Добавлено */
     padding: 20px;
@@ -151,7 +151,7 @@ li {
 
 .inner-block {
     flex: 0 0 calc(20% - 30px); /* Пропорциональная ширина */
-    height: 65%;
+    height: 70%;
     background-color: #d3a27f;
     margin: 10px; /* Уменьшен отступ между блоками */
     display: flex;
@@ -161,6 +161,7 @@ li {
     text-align: center;
     border-radius: 20px;
     transition: background-color 0.3s;
+
 }
 
 .inner-block .icon {

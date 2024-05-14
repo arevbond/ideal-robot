@@ -39,10 +39,11 @@ templ sidebar() {
             <img class="icon" src="/static/images/automation.svg" alt=""/>
             Автоматизация
         </a>
-        <a href="#settings" class="tab">
+
+        <!-- <a href="#settings" class="tab">
             <img class="icon" src="/static/images/settings.svg" alt=""/>
             Настройки
-        </a>
+        </a> -->
        // <a href="#logout" class="logout">Выход</a>
     </div>
 }
@@ -54,13 +55,15 @@ templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, historie
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
         <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+        <meta name="color-scheme" content="light dark" />
         <title>Dashboard</title>
         <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="/static/style.css" media="screen"/>
+        <link rel="stylesheet" href="static/pico-main/css/pico.css"/>
     </head>
     <body>
     @sidebar()
-    <div class="content">
+    <div class="container">
 
     @dashboardRooms(rooms)
 
@@ -73,7 +76,6 @@ templ Dashboard(rooms []*models.Room, devices []*models.DeviceWithData, historie
     </div>
     </body>
     </html>
-
 }
 
 templ dashboardRooms(rooms []*models.Room) {
@@ -103,7 +105,7 @@ templ DashboardReminders(reminders []*models.Reminder) {
         for _, r := range reminders {
             <li>
             if r.IsDone {
-            <input type="checkbox" hx-target="closest div"
+            <input checked type="checkbox" hx-target="closest div"
                 hx-post={string(templ.URL(fmt.Sprintf("reminder/%d", r.ID)))}
                 hx-trigger="click" name="isDone" value={strconv.FormatBool(!r.IsDone)}
                 hx-swap="outerHTML"/>
@@ -133,6 +135,7 @@ templ History(histories []*models.History) {
     </div>
 }
 
+
 templ DashboardDevices(devices []*models.DeviceWithData) {
     <div class="block" id="devices">
         <h2>Датчики</h2>
@@ -155,9 +158,9 @@ templ DashboardDevices(devices []*models.DeviceWithData) {
 
 templ temperatureDevice(device *models.DeviceWithData) {
     <div class="temperature inner-block">
-    <h3> { device.Name }</h3>
-    <img class="icon" src="/static/images/temperature.svg" alt=""/>
+    // <h3> { device.Name }</h3>
     @OffButton(device)
+    <img class="icon" src="/static/images/temperature.svg" alt=""/>
     <p> Температура: {strconv.FormatFloat(device.Value.Value, 'f', 1, 64)}°C</p>
     </div>
 }
@@ -165,7 +168,7 @@ templ temperatureDevice(device *models.DeviceWithData) {
 templ humidityDevice(device *models.DeviceWithData) {
     <div class="temperature inner-block">
     @OffButton(device)
-    <h3> { device.Name }</h3>
+    // <h3> { device.Name }</h3>
     <img class="icon" src="/static/images/humidity.svg" alt=""/>
     <p> Влажность: {strconv.FormatFloat(device.Value.Value, 'f', 0, 64)}% </p>
     </div>
