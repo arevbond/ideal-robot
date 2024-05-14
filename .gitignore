@@ -4,3 +4,4 @@ go.mod
 go.sum
 .gitignore
 .env
+internal/publicapi/static
